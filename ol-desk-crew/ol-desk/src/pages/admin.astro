@@ -1,0 +1,267 @@
+---
+import "../styles/global.css";
+import AppShell from "../components/AppShell.astro";
+import { getProjectIds, loadProjectAgentEvaluations, loadProjectDashboard, loadProjectDiagnostics } from "../lib/content-asset";
+import { resolveProjectId } from "../lib/app-state";
+
+const projects = await getProjectIds();
+const projectId = resolveProjectId(projects, Astro.url.searchParams.get("project"));
+
+if (!projectId) {
+  throw new Error("No Contents-Asset projects found.");
+}
+
+const dashboard = await loadProjectDashboard(projectId);
+const diagnostics = await loadProjectDiagnostics(projectId);
+const evaluations = await loadProjectAgentEvaluations(projectId);
+const provenanceDocs = dashboard.documents.filter((document) => document.provenanceIssues.length > 0);
+const riskDocs = dashboard.documents.filter((document) => document.riskIssues.length > 0).slice(0, 20);
+const humanEditingDocs = dashboard.documents.filter((document) => document.currentStatus === "human_editing");
+const handoffReadyDocs = dashboard.documents.filter((document) => document.currentStatus === "draft3_handoff_ready" || document.assets.handoffDraft3);
+---
+
+<AppShell title="OL-DESK · 관리" projectId={projectId} projects={projects} activeMenu="admin">
+  <section slot="hero" class="ol-card">
+    <div class="ol-desk-panel-head">
+      <div>
+        <div class="ol-kicker">Admin</div>
+        <h1>감사 및 데이터 점검</h1>
+        <p>provenance 경고, parse 오류, 리스크 문서를 운영 관점에서 점검합니다.</p>
+      </div>
+      <div class="ol-desk-chip-row">
+        <span class="ol-badge">provenance docs {provenanceDocs.length}</span>
+        <span class="ol-badge">risk docs {riskDocs.length}</span>
+        <span class="ol-badge">human editing {humanEditingDocs.length}</span>
+        <span class="ol-badge">handoff ready {handoffReadyDocs.length}</span>
+        <span class="ol-badge">exports {diagnostics.exportFiles.length}</span>
+        <span class="ol-badge">revision handoff {diagnostics.revisionHandoffs.length}</span>
+        <span class="ol-badge">git changes {diagnostics.gitStatus.length}</span>
+        <span class="ol-badge">evals {evaluations.length}</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="ol-desk-grid">
+    <section class="ol-card">
+      <div class="ol-desk-panel-head">
+        <div>
+          <h2>Provenance 경고</h2>
+          <p>산출물 유효성과 별개로 운영 절차 이슈가 기록된 문서입니다.</p>
+        </div>
+      </div>
+      {provenanceDocs.length > 0 ? (
+        <div class="ol-desk-risk-list">
+          {provenanceDocs.map((document) => (
+            <article class="ol-desk-risk-item">
+              <div class="ol-desk-log-meta">
+                <span class="ol-badge">{document.docId}</span>
+                {document.provenanceIssues.map((issue) => <span class="ol-badge ol-badge-accent">{issue.key}</span>)}
+              </div>
+              <strong>{document.title}</strong>
+              <p>{document.nextAction || "next action 없음"}</p>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div class="ol-desk-empty">현재 provenance 경고 문서가 없습니다.</div>
+      )}
+    </section>
+
+    <aside class="ol-desk-stack">
+      <section class="ol-card ol-card-tight">
+        <div class="ol-desk-panel-head">
+          <div>
+            <h3>Human Review 상태</h3>
+            <p>사람수정중과 handoff 준비 문서를 운영 큐로 봅니다.</p>
+          </div>
+        </div>
+        <div class="ol-desk-risk-list">
+          {humanEditingDocs.map((document) => (
+            <article class="ol-desk-risk-item">
+              <div class="ol-desk-log-meta">
+                <span class="ol-badge">{document.docId}</span>
+                <span class="ol-badge">human_editing</span>
+              </div>
+              <strong>{document.title}</strong>
+              <p>{document.nextAction || "사람 수정 진행 중"}</p>
+            </article>
+          ))}
+          {handoffReadyDocs.map((document) => (
+            <article class="ol-desk-risk-item">
+              <div class="ol-desk-log-meta">
+                <span class="ol-badge">{document.docId}</span>
+                <span class="ol-badge ol-badge-accent">draft3_handoff_ready</span>
+              </div>
+              <strong>{document.title}</strong>
+              <p>{document.assets.handoffDraft3 ? "handoff 파일 생성됨" : document.nextAction || "3차반영 요청 대기"}</p>
+            </article>
+          ))}
+          {humanEditingDocs.length === 0 && handoffReadyDocs.length === 0 && (
+            <div class="ol-desk-empty">현재 human review 운영 큐가 비어 있습니다.</div>
+          )}
+        </div>
+      </section>
+
+      <section class="ol-card ol-card-tight">
+        <div class="ol-desk-panel-head">
+          <div>
+            <h3>리스크 문서</h3>
+            <p>human 판단이 필요한 문서를 우선 노출합니다.</p>
+          </div>
+        </div>
+        <div class="ol-desk-risk-list">
+          {riskDocs.map((document) => (
+            <article class="ol-desk-risk-item">
+              <div class="ol-desk-log-meta">
+                <span class="ol-badge">{document.docId}</span>
+                {document.riskIssues.slice(0, 3).map((issue) => <span class="ol-badge">{issue.key}</span>)}
+              </div>
+              <strong>{document.title}</strong>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="ol-card ol-card-tight">
+        <div class="ol-desk-panel-head">
+          <div>
+            <h3>Git 상태</h3>
+            <p>로컬 작업트리 변경 사항을 요약합니다.</p>
+          </div>
+        </div>
+        {diagnostics.gitStatus.length > 0 ? (
+          <div class="ol-desk-risk-list">
+            {diagnostics.gitStatus.slice(0, 20).map((line) => (
+              <article class="ol-desk-risk-item">
+                <strong>{line.slice(0, 2)}</strong>
+                <p>{line.slice(3)}</p>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div class="ol-desk-empty">작업트리 변경 없음</div>
+        )}
+      </section>
+
+      <section class="ol-card ol-card-tight">
+        <div class="ol-desk-panel-head">
+          <div>
+            <h3>데이터 무결성</h3>
+            <p>documents/status 불일치와 누락 산출물을 확인합니다.</p>
+          </div>
+        </div>
+        <div class="ol-desk-risk-list">
+          {diagnostics.parseErrors.map((message) => (
+            <article class="ol-desk-risk-item">
+              <strong>parse error</strong>
+              <p>{message}</p>
+            </article>
+          ))}
+          {diagnostics.documentsStatusMismatch.slice(0, 10).map((item) => (
+            <article class="ol-desk-risk-item">
+              <strong>{item.docId}</strong>
+              <p>documents.json={item.documentsStatus} · status={item.statusFileStatus}</p>
+            </article>
+          ))}
+          {diagnostics.missingStatusDocs.slice(0, 10).map((docId) => (
+            <article class="ol-desk-risk-item">
+              <strong>{docId}</strong>
+              <p>status JSON 누락</p>
+            </article>
+          ))}
+          {diagnostics.missingExpectedAssets.slice(0, 10).map((item) => (
+            <article class="ol-desk-risk-item">
+              <strong>{item.docId}</strong>
+              <p>{item.currentStatus} · missing {item.missing.join(", ")}</p>
+            </article>
+          ))}
+          {diagnostics.parseErrors.length === 0 &&
+            diagnostics.documentsStatusMismatch.length === 0 &&
+            diagnostics.missingStatusDocs.length === 0 &&
+            diagnostics.missingExpectedAssets.length === 0 && (
+              <div class="ol-desk-empty">현재 확인된 무결성 이슈가 없습니다.</div>
+            )}
+        </div>
+      </section>
+
+      <section class="ol-card ol-card-tight">
+        <div class="ol-desk-panel-head">
+          <div>
+            <h3>Agent Evaluation</h3>
+            <p>인간 평가가 쌓이면 agent별 품질 기록을 확인합니다.</p>
+          </div>
+        </div>
+        {evaluations.length > 0 ? (
+          <div class="ol-desk-risk-list">
+            {evaluations.slice(0, 12).map((evaluation) => (
+              <article class="ol-desk-risk-item">
+                <div class="ol-desk-log-meta">
+                  <span class="ol-badge">{evaluation.agentId}</span>
+                  <span class="ol-badge">{evaluation.docId}</span>
+                  <span class="ol-badge">{evaluation.stage}</span>
+                </div>
+                <strong>{evaluation.agentName || evaluation.evaluationId}</strong>
+                <p>accuracy {evaluation.accuracy} · follow {evaluation.instructionFollowing} · useful {evaluation.usefulness}</p>
+                <small>{evaluation.issues.join(", ") || evaluation.improvementNote || "세부 메모 없음"}</small>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div class="ol-desk-empty">현재 agent evaluation 데이터가 없습니다.</div>
+        )}
+      </section>
+
+      <section class="ol-card ol-card-tight">
+        <div class="ol-desk-panel-head">
+          <div>
+            <h3>Export 산출물</h3>
+            <p>`final_done` 이후 생성된 export 파일을 직접 추적합니다.</p>
+          </div>
+        </div>
+        {diagnostics.exportFiles.length > 0 ? (
+          <div class="ol-desk-risk-list">
+            {diagnostics.exportFiles.slice(0, 20).map((file) => (
+              <article class="ol-desk-risk-item">
+                <div class="ol-desk-log-meta">
+                  <span class="ol-badge">{file.docId}</span>
+                  <span class="ol-badge">export</span>
+                </div>
+                <strong>{file.fileName}</strong>
+                <p>{file.relativePath}</p>
+                <small>{file.updatedAt}</small>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div class="ol-desk-empty">현재 export 산출물이 없습니다.</div>
+        )}
+      </section>
+
+      <section class="ol-card ol-card-tight">
+        <div class="ol-desk-panel-head">
+          <div>
+            <h3>Revision Handoff</h3>
+            <p>최종 승인과 revision reopen handoff 기록을 추적합니다.</p>
+          </div>
+        </div>
+        {diagnostics.revisionHandoffs.length > 0 ? (
+          <div class="ol-desk-risk-list">
+            {diagnostics.revisionHandoffs.slice(0, 20).map((handoff) => (
+              <article class="ol-desk-risk-item">
+                <div class="ol-desk-log-meta">
+                  <span class="ol-badge">{handoff.docId}</span>
+                  <span class="ol-badge ol-badge-accent">{handoff.action}</span>
+                </div>
+                <strong>{handoff.fileName}</strong>
+                <p>{handoff.relativePath}</p>
+                <small>{handoff.updatedAt}</small>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div class="ol-desk-empty">현재 revision handoff 기록이 없습니다.</div>
+        )}
+      </section>
+    </aside>
+  </div>
+</AppShell>

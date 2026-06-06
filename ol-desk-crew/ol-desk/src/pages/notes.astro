@@ -1,0 +1,57 @@
+---
+import "../styles/global.css";
+import AppShell from "../components/AppShell.astro";
+import { getProjectIds, loadProjectNotes } from "../lib/content-asset";
+import { resolveProjectId } from "../lib/app-state";
+
+const projects = await getProjectIds();
+const projectId = resolveProjectId(projects, Astro.url.searchParams.get("project"));
+
+if (!projectId) {
+  throw new Error("No Contents-Asset projects found.");
+}
+
+const notes = await loadProjectNotes(projectId);
+---
+
+<AppShell title="OL-DESK · 노트" projectId={projectId} projects={projects} activeMenu="notes">
+  <section slot="hero" class="ol-card">
+    <div class="ol-desk-panel-head">
+      <div>
+        <div class="ol-kicker">Notes</div>
+        <h1>작업 노트</h1>
+        <p>문서별 메모와 human note가 쌓일 위치를 점검합니다.</p>
+      </div>
+      <div class="ol-desk-chip-row">
+        <span class="ol-badge">files {notes.length}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="ol-card">
+    {notes.length > 0 ? (
+      <div class="ol-desk-risk-list">
+        {notes.map((note) => (
+          <article class="ol-desk-risk-item">
+            <strong>{note.docId}</strong>
+            <p>{note.relativePath} · updated {note.updatedAt || "-"}</p>
+            {note.notes.length > 0 ? (
+              <div class="ol-desk-sublist">
+                {note.notes.map((item) => (
+                  <div class="ol-desk-subitem">
+                    <strong>{String(item.note_id ?? "note")}</strong>
+                    <p>{String(item.body ?? "")}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>메모 항목 없음</p>
+            )}
+          </article>
+        ))}
+      </div>
+    ) : (
+      <div class="ol-desk-empty">현재 notes 디렉터리는 비어 있습니다.</div>
+    )}
+  </section>
+</AppShell>

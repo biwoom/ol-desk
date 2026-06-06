@@ -1,0 +1,72 @@
+---
+import "../styles/global.css";
+import AppShell from "../components/AppShell.astro";
+import { getProjectIds, loadProjectDashboard } from "../lib/content-asset";
+import { resolveDocId, resolveProjectId, toneForStatus } from "../lib/app-state";
+
+const projects = await getProjectIds();
+const projectId = resolveProjectId(projects, Astro.url.searchParams.get("project"));
+
+if (!projectId) {
+  throw new Error("No Contents-Asset projects found.");
+}
+
+const dashboard = await loadProjectDashboard(projectId);
+const docId = resolveDocId(dashboard.documents, Astro.url.searchParams.get("doc"));
+const detail = docId ? dashboard.documents.find((document) => document.docId === docId) ?? null : null;
+---
+
+<AppShell title="OL-DESK · 번역" projectId={projectId} projects={projects} activeMenu="translation">
+  <section slot="hero" class="ol-card">
+    <div class="ol-desk-panel-head">
+      <div>
+        <div class="ol-kicker">Translation</div>
+        <h1>문서 상세 번역 뷰</h1>
+        <p>문서 목록에서 선택한 뒤 정식 상세 라우트로 이동해 raw, normalized, draft1, draft2를 검토합니다.</p>
+      </div>
+      {detail && (
+        <div class="ol-desk-chip-row">
+          <span class="ol-desk-status" data-tone={toneForStatus(detail.currentStatus)}>
+            {detail.displayStatus}
+          </span>
+          <span class="ol-badge">status {detail.currentStatus}</span>
+          <span class="ol-badge">stage {detail.latestStage ?? "n/a"}</span>
+        </div>
+      )}
+    </div>
+    <div class="ol-desk-doc-picker">
+      {dashboard.documents
+        .filter((document) => document.assets.normalized || document.assets.draft1 || document.assets.draft2 || document.riskIssues.length > 0)
+        .slice(0, 12)
+        .map((document) => (
+          <a
+            class:list={["ol-btn", "ol-btn-sm", detail?.docId === document.docId ? "ol-btn-primary" : "ol-btn-outline"]}
+            href={`/translation/${document.docId}?project=${projectId}`}
+          >
+            {document.docId}
+          </a>
+        ))}
+    </div>
+  </section>
+
+  {detail ? (
+    <section class="ol-card">
+      <div class="ol-desk-panel-head">
+        <div>
+          <h2>{detail.title}</h2>
+          <p>{detail.docId}</p>
+        </div>
+      </div>
+      <div class="ol-desk-artifact-list">
+        <a class="ol-desk-artifact ol-desk-linkcard" href={`/translation/${detail.docId}?project=${projectId}`}>
+          <strong>상세 번역 뷰 열기</strong>
+          <span>본문, 단계 로그, 용어/각주 연결 보기</span>
+        </a>
+      </div>
+    </section>
+  ) : (
+    <section class="ol-card">
+      <div class="ol-desk-empty">선택 가능한 문서가 없습니다.</div>
+    </section>
+  )}
+</AppShell>

@@ -1,0 +1,60 @@
+---
+import "../styles/global.css";
+import AppShell from "../components/AppShell.astro";
+import { getProjectIds, loadProjectRevisions } from "../lib/content-asset";
+import { resolveProjectId } from "../lib/app-state";
+
+const projects = await getProjectIds();
+const projectId = resolveProjectId(projects, Astro.url.searchParams.get("project"));
+
+if (!projectId) {
+  throw new Error("No Contents-Asset projects found.");
+}
+
+const revisions = await loadProjectRevisions(projectId);
+---
+
+<AppShell title="OL-DESK · 수정" projectId={projectId} projects={projects} activeMenu="revisions">
+  <section slot="hero" class="ol-card">
+    <div class="ol-desk-panel-head">
+      <div>
+        <div class="ol-kicker">Revisions</div>
+        <h1>수정/검토 메모</h1>
+        <p>A05 검토 메모와 이후 human revision cycle을 같은 표면에서 다룹니다.</p>
+      </div>
+      <div class="ol-desk-chip-row">
+        <span class="ol-badge">revisions {revisions.length}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="ol-card">
+    {revisions.length > 0 ? (
+      <div class="ol-desk-risk-list">
+        {revisions.map((revision) => (
+          <article class="ol-desk-risk-item">
+            <div class="ol-desk-log-meta">
+              <span class="ol-badge">{revision.docId}</span>
+              <span class="ol-badge">{revision.stage}</span>
+              <span class="ol-badge">{revision.status}</span>
+              <span class="ol-badge">{revision.createdBy}</span>
+            </div>
+            <strong>{revision.summary}</strong>
+            <div class="ol-desk-sublist">
+              {revision.items.map((item) => (
+                <div class="ol-desk-subitem">
+                  <span class="ol-badge">{item.category}</span>
+                  <span class="ol-badge">{item.severity}</span>
+                  <span class="ol-badge">seg {item.sourceSegmentId}</span>
+                  <p>{item.note}</p>
+                </div>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+    ) : (
+      <div class="ol-desk-empty">수정 데이터가 없습니다.</div>
+    )}
+  </section>
+</AppShell>

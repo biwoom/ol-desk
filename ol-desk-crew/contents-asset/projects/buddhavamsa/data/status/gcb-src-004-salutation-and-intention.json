@@ -1,10 +1,10 @@
 {
   "doc_id": "gcb-src-004-salutation-and-intention",
-  "current_status": "draft2_done",
-  "display_status": "2차번역완료",
-  "current_owner": "B01-인간검수 준비 에이전트-청문",
-  "next_action": "인간검수 준비",
+  "current_status": "draft3_handoff_ready",
+  "display_status": "3차반영준비",
+  "current_owner": "B00-3차 확정 관리 매니저-결정",
+  "next_action": "3차반영 요청",
   "blocked": false,
   "blocker_reason": "",
-  "updated_at": "2026-06-07T00:06:00+09:00"
+  "updated_at": "2026-06-06T16:38:34+09:00"
 }

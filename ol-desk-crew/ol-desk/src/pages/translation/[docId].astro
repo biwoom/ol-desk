@@ -1,0 +1,746 @@
+---
+import "../../styles/global.css";
+import AppShell from "../../components/AppShell.astro";
+import { getProjectIds, loadDocumentDetail, loadProjectDashboard } from "../../lib/content-asset";
+import { renderMarkdown } from "../../lib/markdown";
+import { resolveProjectId, toneForStatus } from "../../lib/app-state";
+
+const projects = await getProjectIds();
+const projectId = resolveProjectId(projects, Astro.url.searchParams.get("project"));
+const docId = Astro.params.docId ?? null;
+
+if (!projectId || !docId) {
+  throw new Error("Missing project or document.");
+}
+
+const dashboard = await loadProjectDashboard(projectId);
+const detail = await loadDocumentDetail(projectId, docId);
+
+if (!detail.document) {
+  throw new Error(`Document not found: ${docId}`);
+}
+
+type ManuscriptKey = "draft1" | "draft2" | "draft3" | "draft4";
+type ViewKey = ManuscriptKey | "compare";
+
+const manuscriptViews: {
+  key: ManuscriptKey;
+  label: string;
+  title: string;
+  text: string | null;
+  available: boolean;
+  editable: boolean;
+}[] = [
+  { key: "draft1", label: "1차원고", title: "1차 원고", text: detail.draft1Text, available: detail.document.assets.draft1, editable: false },
+  { key: "draft2", label: "2차원고", title: "2차 원고", text: detail.draft2Text, available: detail.document.assets.draft2, editable: false },
+  { key: "draft3", label: "3차원고", title: "3차 원고", text: detail.draft3Text ?? detail.draft2Text, available: Boolean(detail.draft3Text), editable: true },
+  { key: "draft4", label: "4차원고", title: "4차 원고", text: detail.draft4Text ?? detail.draft3Text, available: Boolean(detail.draft4Text), editable: true }
+];
+
+const requestedTab = Astro.url.searchParams.get("tab") as ViewKey | null;
+const activeTab: ViewKey = requestedTab && ["draft1", "draft2", "draft3", "draft4", "compare"].includes(requestedTab)
+  ? requestedTab
+  : detail.document.assets.draft2
+    ? "draft2"
+    : "draft1";
+const activeManuscript = manuscriptViews.find((view) => view.key === activeTab) ?? manuscriptViews[1];
+const compareKey = (Astro.url.searchParams.get("compare") as ManuscriptKey | null) ?? "draft2";
+const compareManuscript = manuscriptViews.find((view) => view.key === compareKey) ?? manuscriptViews[1];
+const leftKey = (Astro.url.searchParams.get("left") as ManuscriptKey | null) ?? "draft2";
+const rightKey = (Astro.url.searchParams.get("right") as ManuscriptKey | null) ?? "draft3";
+const leftManuscript = manuscriptViews.find((view) => view.key === leftKey) ?? manuscriptViews[1];
+const rightManuscript = manuscriptViews.find((view) => view.key === rightKey) ?? manuscriptViews[2];
+const savedState = Astro.url.searchParams.get("saved");
+const returnTo = `/translation/${detail.document.docId}?project=${projectId}&tab=${activeTab === "compare" ? "draft3" : activeTab}`;
+const reviewDocs = dashboard.documents
+  .filter((document) =>
+    document.assets.draft2 ||
+    document.assets.draft3 ||
+    document.assets.draft4 ||
+    document.currentStatus === "human_editing" ||
+    document.currentStatus === "draft3_handoff_ready" ||
+    document.riskIssues.length > 0
+  )
+  .slice(0, 12);
+
+function viewHref(tab: ViewKey, extra = "") {
+  const suffix = extra ? `&${extra}` : "";
+  return `/translation/${detail.document?.docId}?project=${projectId}&tab=${tab}${suffix}`;
+}
+
+function htmlFor(text: string | null, fallback: string) {
+  return renderMarkdown(text) || `<p>${fallback}</p>`;
+}
+
+function availabilityLabel(view: { available: boolean; editable: boolean }) {
+  if (view.available) return "있음";
+  if (view.editable) return "작성 가능";
+  return "없음";
+}
+
+function valueOf(item: Record<string, unknown>, keys: string[]) {
+  for (const key of keys) {
+    const value = item[key];
+    if (typeof value === "string" && value.length > 0) return value;
+  }
+  return "-";
+}
+
+function noteSegmentLabel(note: Record<string, unknown>) {
+  const context = note.context;
+  if (!context || typeof context !== "object") return "general";
+  const segmentId = (context as Record<string, unknown>).segment_id;
+  return typeof segmentId === "string" && segmentId.length > 0 ? segmentId : "general";
+}
+
+const revisionItems = Array.isArray((detail.revisionData?.revisions as unknown[] | undefined))
+  ? (detail.revisionData?.revisions as Record<string, unknown>[])
+  : [];
+const notes = Array.isArray((detail.noteData?.notes as unknown[] | undefined))
+  ? (detail.noteData?.notes as Record<string, unknown>[])
+  : [];
+const documentLogs = detail.logs
+  .filter((log) => log.kind === "document" && log.agentId)
+  .sort((left, right) => right.createdAt.localeCompare(left.createdAt));
+const evaluationTargets = documentLogs.filter(
+  (log, index, items) => items.findIndex((candidate) => candidate.agentId === log.agentId && candidate.stage === log.stage) === index
+);
+---
+
+<AppShell title={`OL-DESK · ${detail.document.docId}`} projectId={projectId} projects={projects} activeMenu="translation">
+  <section slot="hero" class="ol-card">
+    <div class="ol-desk-panel-head">
+      <div>
+        <div class="ol-kicker">Translation Desk</div>
+        <h1>{detail.document.title}</h1>
+        <p>{detail.document.docId} · {detail.document.nextAction || "다음 작업 대기"}</p>
+      </div>
+      <div class="ol-desk-chip-row">
+        <span class="ol-desk-status" data-tone={toneForStatus(detail.document.currentStatus)}>
+          {detail.document.displayStatus}
+        </span>
+        <span class="ol-badge">segments {detail.segmentCount}</span>
+        <span class="ol-badge">terms {detail.terms.length}</span>
+        <span class="ol-badge">annotations {detail.annotations.length}</span>
+      </div>
+    </div>
+    <div class="ol-desk-focus-strip">
+      <div>
+        <strong>현재 작업</strong>
+        <span>{activeTab === "compare" ? "원고 비교" : `${activeManuscript.label} 검토`}</span>
+      </div>
+      <div>
+        <strong>기준 원고</strong>
+        <span>{compareManuscript.label}</span>
+      </div>
+      <div>
+        <strong>보조 판단</strong>
+        <span>용어 {detail.terms.length} · 각주 {detail.annotations.length} · 태그 {detail.tags.length}</span>
+      </div>
+    </div>
+    <div class="ol-desk-doc-picker">
+      {reviewDocs
+        .map((document) => (
+          <a
+            class:list={["ol-btn", "ol-btn-sm", detail.document?.docId === document.docId ? "ol-btn-primary" : "ol-btn-outline"]}
+            href={`/translation/${document.docId}?project=${projectId}`}
+          >
+            {document.title || document.docId}
+          </a>
+        ))}
+    </div>
+  </section>
+
+  <section class="ol-card">
+    <div class="ol-desk-panel-head">
+      <div>
+        <h2>원고 검토</h2>
+        <p>본문을 먼저 읽고, 필요한 판단만 오른쪽 보조 패널에서 처리합니다.</p>
+      </div>
+      <div class="ol-desk-chip-row">
+        <span class="ol-badge">owner {detail.document.currentOwner || "-"}</span>
+        <span class="ol-badge">next {detail.document.nextAction || "-"}</span>
+      </div>
+    </div>
+
+    {savedState && (
+      <div class="ol-desk-flash">
+        {savedState === "draft3" && <span>3차 원고를 저장했습니다.</span>}
+        {savedState === "note" && <span>감수 메모를 저장했습니다.</span>}
+        {savedState === "revision" && <span>수정 판단을 저장했습니다.</span>}
+        {savedState === "term" && <span>용어 상태를 저장했습니다.</span>}
+        {savedState === "annotation" && <span>각주 상태를 저장했습니다.</span>}
+        {savedState === "tag" && <span>태그를 저장했습니다.</span>}
+        {savedState === "handoff" && <span>draft3 handoff를 생성했습니다.</span>}
+        {savedState === "draft4" && <span>4차 원고를 저장했습니다.</span>}
+        {savedState === "final" && <span>최종 승인을 저장했습니다.</span>}
+        {savedState === "revision_reopen" && <span>revision cycle을 다시 열었습니다.</span>}
+        {savedState === "evaluation" && <span>agent evaluation을 저장했습니다.</span>}
+      </div>
+    )}
+
+    <nav class="ol-desk-tabs" aria-label="원고 탭">
+      {manuscriptViews.map((view) => (
+        <a class:list={["ol-desk-tab", activeTab === view.key && "is-active"]} href={viewHref(view.key)}>
+          <span>{view.label}</span>
+          <small>{availabilityLabel(view)}</small>
+        </a>
+      ))}
+      <a class:list={["ol-desk-tab", activeTab === "compare" && "is-active"]} href={viewHref("compare")}>
+        <span>비교해보기</span>
+        <small>선택</small>
+      </a>
+    </nav>
+
+    {activeTab !== "compare" ? (
+      <div class="ol-desk-review-layout">
+        <div class="ol-desk-review-main">
+          <div class="ol-desk-review-toolbar">
+            <div>
+              <h3>{activeManuscript.title}</h3>
+              <p>{activeManuscript.editable ? "수정 후 저장할 수 있습니다." : "비교 기준으로 읽습니다."}</p>
+            </div>
+            <form class="ol-desk-compare-form" method="get" action={`/translation/${detail.document.docId}`}>
+              <input type="hidden" name="project" value={projectId} />
+              <input type="hidden" name="tab" value={activeManuscript.key} />
+              <label>
+                비교 대상
+                <select name="compare">
+                  {manuscriptViews.map((view) => (
+                    <option value={view.key} selected={view.key === compareManuscript.key}>{view.label}</option>
+                  ))}
+                </select>
+              </label>
+              <button class="ol-btn ol-btn-sm ol-btn-outline" type="submit">비교</button>
+            </form>
+          </div>
+
+          <div class={compareManuscript.key !== activeManuscript.key ? "ol-desk-compare-grid" : "ol-desk-single-pane"}>
+            <article class="ol-desk-markdown">
+              <div class="ol-desk-markdown-head">
+                <h3>{activeManuscript.title}</h3>
+                <span class="ol-badge">{availabilityLabel(activeManuscript)}</span>
+              </div>
+              {activeManuscript.editable ? (
+                <div class="ol-desk-editor-shell">
+                  {activeManuscript.key === "draft3" ? (
+                    <form method="post" action="/api/review/draft3" class="ol-desk-editor-form">
+                      <input type="hidden" name="projectId" value={projectId} />
+                      <input type="hidden" name="docId" value={detail.document.docId} />
+                      <textarea name="content">{activeManuscript.text ?? ""}</textarea>
+                      <div class="ol-desk-editor-actions">
+                        <div class="ol-desk-editor-note">
+                          {detail.draft3Text
+                            ? "현재 draft3 저장본을 편집합니다."
+                            : "초기값은 draft2이며, 첫 저장 시 draft3 원고를 생성합니다."}
+                        </div>
+                        <button class="ol-btn ol-btn-sm ol-btn-primary" type="submit">3차 원고 저장</button>
+                      </div>
+                    </form>
+                  ) : activeManuscript.key === "draft4" ? (
+                    <form method="post" action="/api/review/draft4" class="ol-desk-editor-form">
+                      <input type="hidden" name="projectId" value={projectId} />
+                      <input type="hidden" name="docId" value={detail.document.docId} />
+                      <textarea name="content">{activeManuscript.text ?? detail.draft3Text ?? ""}</textarea>
+                      <div class="ol-desk-editor-actions">
+                        <div class="ol-desk-editor-note">
+                          {detail.draft4Text
+                            ? "현재 draft4 저장본을 편집합니다."
+                            : "초기값은 draft3이며, 첫 저장 시 draft4 최종원고를 생성합니다."}
+                        </div>
+                        <button class="ol-btn ol-btn-sm ol-btn-primary" type="submit">4차 원고 저장</button>
+                      </div>
+                    </form>
+                  ) : (
+                    <>
+                      <textarea readonly>{activeManuscript.text ?? ""}</textarea>
+                      <div class="ol-desk-editor-note">
+                        4차 원고는 B라인/최종검토 산출물 연결 후 편집 저장을 활성화합니다.
+                      </div>
+                    </>
+                  )}
+                </div>
+              ) : (
+                <div class="ol-desk-markdown-body" set:html={htmlFor(activeManuscript.text, "해당 원고 산출물이 없습니다.")} />
+              )}
+            </article>
+
+            {compareManuscript.key !== activeManuscript.key && (
+              <article class="ol-desk-markdown">
+                <div class="ol-desk-markdown-head">
+                <h3>{compareManuscript.title}</h3>
+                  <span class="ol-badge">{availabilityLabel(compareManuscript)}</span>
+                </div>
+                <div class="ol-desk-markdown-body" set:html={htmlFor(compareManuscript.text, "비교 대상 산출물이 없습니다.")} />
+              </article>
+            )}
+          </div>
+        </div>
+
+        <aside class="ol-desk-review-side">
+          <section class="ol-desk-side-panel">
+            <h3>용어</h3>
+            {detail.terms.length > 0 ? (
+              <div class="ol-desk-meta-list">
+                {detail.terms.map((term) => (
+                  <article>
+                    <strong>{valueOf(term, ["source_term"])}</strong>
+                    <p>{valueOf(term, ["translation"])} · {valueOf(term, ["status"])}</p>
+                    <small>{valueOf(term, ["usage_note"])}</small>
+                    <form method="post" action="/api/review/term" class="ol-desk-inline-form ol-desk-inline-form-tight">
+                      <input type="hidden" name="projectId" value={projectId} />
+                      <input type="hidden" name="termId" value={valueOf(term, ["term_id"])} />
+                      <input type="hidden" name="returnTo" value={returnTo} />
+                      <label>
+                        상태
+                        <select name="status">
+                          {["candidate", "approved", "hold", "rejected", "deprecated"].map((status) => (
+                            <option value={status} selected={status === valueOf(term, ["status"])}>{status}</option>
+                          ))}
+                        </select>
+                      </label>
+                      <button class="ol-btn ol-btn-sm ol-btn-outline" type="submit">저장</button>
+                    </form>
+                  </article>
+                ))}
+              </div>
+            ) : <div class="ol-desk-empty">용어 후보 없음</div>}
+            <details class="ol-desk-add-panel">
+              <summary>새 용어 추가</summary>
+              <form method="post" action="/api/review/term" class="ol-desk-inline-form">
+                <input type="hidden" name="projectId" value={projectId} />
+                <input type="hidden" name="docId" value={detail.document.docId} />
+                <input type="hidden" name="returnTo" value={returnTo} />
+                <label>
+                  원어
+                  <input type="text" name="sourceTerm" placeholder="Bodhisatta" />
+                </label>
+                <label>
+                  언어
+                  <input type="text" name="sourceLanguage" value="pali" />
+                </label>
+                <label>
+                  번역안
+                  <input type="text" name="translation" placeholder="보디삿타" />
+                </label>
+                <label>
+                  대안
+                  <input type="text" name="alternatives" placeholder="보살, 깨달음 수행자" />
+                </label>
+                <label>
+                  메모
+                  <textarea name="usageNote" placeholder="프로젝트 전체 용어 기준과 맥락 메모"></textarea>
+                </label>
+                <label>
+                  상태
+                  <select name="status">
+                    {["candidate", "approved", "hold"].map((status) => (
+                      <option value={status}>{status}</option>
+                    ))}
+                  </select>
+                </label>
+                <button class="ol-btn ol-btn-sm ol-btn-outline" type="submit">용어 추가</button>
+              </form>
+            </details>
+          </section>
+
+          <section class="ol-desk-side-panel">
+            <h3>각주</h3>
+            {detail.annotations.length > 0 ? (
+              <div class="ol-desk-meta-list">
+                {detail.annotations.map((annotation) => (
+                  <article>
+                    <strong>{valueOf(annotation, ["target_text"])}</strong>
+                    <p>{valueOf(annotation, ["annotation_type"])} · {valueOf(annotation, ["status"])}</p>
+                    <small>{valueOf(annotation, ["annotation_text"])}</small>
+                    <form method="post" action="/api/review/annotation" class="ol-desk-inline-form ol-desk-inline-form-tight">
+                      <input type="hidden" name="projectId" value={projectId} />
+                      <input type="hidden" name="annotationId" value={valueOf(annotation, ["annotation_id"])} />
+                      <input type="hidden" name="returnTo" value={returnTo} />
+                      <label>
+                        상태
+                        <select name="status">
+                          {["candidate", "approved", "hold", "rejected", "deprecated"].map((status) => (
+                            <option value={status} selected={status === valueOf(annotation, ["status"])}>{status}</option>
+                          ))}
+                        </select>
+                      </label>
+                      <button class="ol-btn ol-btn-sm ol-btn-outline" type="submit">저장</button>
+                    </form>
+                  </article>
+                ))}
+              </div>
+            ) : <div class="ol-desk-empty">각주 후보 없음</div>}
+            <details class="ol-desk-add-panel">
+              <summary>새 각주 추가</summary>
+              <form method="post" action="/api/review/annotation" class="ol-desk-inline-form">
+                <input type="hidden" name="projectId" value={projectId} />
+                <input type="hidden" name="docId" value={detail.document.docId} />
+                <input type="hidden" name="returnTo" value={returnTo} />
+                <label>
+                  대상 텍스트
+                  <input type="text" name="targetText" placeholder="Paṭiññā" />
+                </label>
+                <label>
+                  유형
+                  <select name="annotationType">
+                    {["gloss", "source_note", "term_note", "context_note"].map((type) => (
+                      <option value={type}>{type}</option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  각주 내용
+                  <textarea name="annotationText" placeholder="본문과 중복되지 않게 보조 설명을 적습니다."></textarea>
+                </label>
+                <label>
+                  상태
+                  <select name="status">
+                    {["candidate", "approved", "hold"].map((status) => (
+                      <option value={status}>{status}</option>
+                    ))}
+                  </select>
+                </label>
+                <button class="ol-btn ol-btn-sm ol-btn-outline" type="submit">각주 추가</button>
+              </form>
+            </details>
+          </section>
+
+          <section class="ol-desk-side-panel">
+            <h3>태그</h3>
+            {detail.tags.length > 0 ? (
+              <div class="ol-desk-meta-list">
+                {detail.tags.map((tag) => (
+                  <article>
+                    <strong>{valueOf(tag, ["name", "tag"])}</strong>
+                    <p>{valueOf(tag, ["status"])}</p>
+                    <form method="post" action="/api/review/tag" class="ol-desk-inline-form ol-desk-inline-form-tight">
+                      <input type="hidden" name="projectId" value={projectId} />
+                      <input type="hidden" name="tagId" value={valueOf(tag, ["tag_id"])} />
+                      <input type="hidden" name="returnTo" value={returnTo} />
+                      <label>
+                        상태
+                        <select name="status">
+                          {["candidate", "approved", "hold", "rejected", "deprecated"].map((status) => (
+                            <option value={status} selected={status === valueOf(tag, ["status"])}>{status}</option>
+                          ))}
+                        </select>
+                      </label>
+                      <button class="ol-btn ol-btn-sm ol-btn-outline" type="submit">저장</button>
+                    </form>
+                  </article>
+                ))}
+              </div>
+            ) : <div class="ol-desk-empty">태그 후보 없음</div>}
+            <details class="ol-desk-add-panel">
+              <summary>새 태그 추가</summary>
+              <form method="post" action="/api/review/tag" class="ol-desk-inline-form">
+                <input type="hidden" name="projectId" value={projectId} />
+                <input type="hidden" name="docId" value={detail.document.docId} />
+                <input type="hidden" name="returnTo" value={returnTo} />
+                <label>
+                  신규 태그
+                  <input type="text" name="name" placeholder="인명, 지명, 교리 주제" />
+                </label>
+                <label>
+                  상태
+                  <select name="status">
+                    {["candidate", "approved", "hold"].map((status) => (
+                      <option value={status}>{status}</option>
+                    ))}
+                  </select>
+                </label>
+                <button class="ol-btn ol-btn-sm ol-btn-outline" type="submit">태그 추가</button>
+              </form>
+            </details>
+          </section>
+
+          <section class="ol-desk-side-panel">
+            <h3>감수 메모</h3>
+            <form method="post" action="/api/review/note" class="ol-desk-inline-form">
+              <input type="hidden" name="projectId" value={projectId} />
+              <input type="hidden" name="docId" value={detail.document.docId} />
+              <input type="hidden" name="tab" value={activeTab === "compare" ? "draft3" : activeTab} />
+              <label>
+                세그먼트 ID
+                <input type="text" name="segmentId" placeholder="001" />
+              </label>
+              <label>
+                메모
+                <textarea name="body" placeholder="4차에서 다시 확인할 문체, 보류 판단, handoff 제외 메모 등을 기록합니다."></textarea>
+              </label>
+              <button class="ol-btn ol-btn-sm ol-btn-outline" type="submit">메모 저장</button>
+            </form>
+            {notes.length > 0 ? (
+              <div class="ol-desk-meta-list ol-desk-meta-list-compact">
+                {notes.slice().reverse().slice(0, 5).map((note) => (
+                  <article>
+                    <strong>{noteSegmentLabel(note)}</strong>
+                    <p>{valueOf(note, ["status"])} · {valueOf(note, ["created_at"])}</p>
+                    <small>{valueOf(note, ["body"])}</small>
+                  </article>
+                ))}
+              </div>
+            ) : <div class="ol-desk-empty">감수 메모 없음</div>}
+          </section>
+
+          <section class="ol-desk-side-panel">
+            <h3>에이전트 평가</h3>
+            {evaluationTargets.length > 0 ? (
+              <details class="ol-desk-add-panel">
+                <summary>평가 기록하기</summary>
+                <form method="post" action="/api/review/evaluation" class="ol-desk-inline-form">
+                  <input type="hidden" name="projectId" value={projectId} />
+                  <input type="hidden" name="docId" value={detail.document.docId} />
+                  <input type="hidden" name="returnTo" value={returnTo} />
+                  <label>
+                    평가 대상
+                    <select name="target">
+                      {evaluationTargets.map((log) => (
+                        <option value={`${log.agentId}|||${log.agentName}|||${log.stage}`}>{log.agentName} · {log.stage}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
+                    정확도
+                    <input type="number" name="accuracy" min="1" max="5" value="3" />
+                  </label>
+                  <label>
+                    지침준수
+                    <input type="number" name="instructionFollowing" min="1" max="5" value="3" />
+                  </label>
+                  <label>
+                    유용성
+                    <input type="number" name="usefulness" min="1" max="5" value="3" />
+                  </label>
+                  <label>
+                    이슈
+                    <input type="text" name="issues" placeholder="segment alignment, tone drift" />
+                  </label>
+                  <label>
+                    개선 메모
+                    <textarea name="improvementNote" placeholder="다음 실행에서 개선해야 할 점을 기록합니다."></textarea>
+                  </label>
+                  <button class="ol-btn ol-btn-sm ol-btn-outline" type="submit">평가 저장</button>
+                </form>
+              </details>
+            ) : (
+              <div class="ol-desk-empty">평가할 document log가 아직 없습니다.</div>
+            )}
+          </section>
+        </aside>
+      </div>
+    ) : (
+      <div class="ol-desk-review-main">
+        <form class="ol-desk-compare-form ol-desk-compare-form-wide" method="get" action={`/translation/${detail.document.docId}`}>
+          <input type="hidden" name="project" value={projectId} />
+          <input type="hidden" name="tab" value="compare" />
+          <label>
+            왼쪽 원고
+            <select name="left">
+              {manuscriptViews.map((view) => (
+                <option value={view.key} selected={view.key === leftManuscript.key}>{view.label}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            오른쪽 원고
+            <select name="right">
+              {manuscriptViews.map((view) => (
+                <option value={view.key} selected={view.key === rightManuscript.key}>{view.label}</option>
+              ))}
+            </select>
+          </label>
+          <button class="ol-btn ol-btn-sm ol-btn-outline" type="submit">열기</button>
+        </form>
+
+        <div class="ol-desk-compare-grid">
+          {[leftManuscript, rightManuscript].map((view) => (
+            <article class="ol-desk-markdown">
+              <div class="ol-desk-markdown-head">
+                <h3>{view.title}</h3>
+                <span class="ol-badge">{view.available ? "available" : view.editable ? "preliminary" : "missing"}</span>
+              </div>
+              <div class="ol-desk-markdown-body" set:html={htmlFor(view.text, "선택한 원고 산출물이 없습니다.")} />
+            </article>
+          ))}
+        </div>
+      </div>
+    )}
+  </section>
+
+  <section class="ol-card">
+    <div class="ol-desk-panel-head">
+      <div>
+        <h2>감수 준비</h2>
+        <p>3차 원고 저장, 감수 메모 기록, draft3 수정 판단 누적까지 지원합니다.</p>
+      </div>
+    </div>
+    <div class="ol-desk-artifact-list">
+      <div class="ol-desk-artifact">
+        <strong>3차 가번역 초기값</strong>
+        <span>{detail.draft3Text ? "draft3 available" : detail.draft2Text ? "draft2 기반 준비 가능" : "2차 원고 필요"}</span>
+      </div>
+      <div class="ol-desk-artifact">
+        <strong>수정 메모</strong>
+        <span>{revisionItems.length} revision groups</span>
+      </div>
+      <div class="ol-desk-artifact">
+        <strong>운영 경고</strong>
+        <span>{detail.document.provenanceIssues.map((issue) => issue.key).join(", ") || "정상"}</span>
+      </div>
+      <div class="ol-desk-artifact">
+        <strong>품질 리스크</strong>
+        <span>{detail.document.riskIssues.map((issue) => issue.key).join(", ") || "없음"}</span>
+      </div>
+    </div>
+
+    <div class="ol-desk-human-grid">
+      <section class="ol-desk-side-panel">
+        <h3>수정 판단 기록</h3>
+        <form method="post" action="/api/review/revision" class="ol-desk-inline-form">
+          <input type="hidden" name="projectId" value={projectId} />
+          <input type="hidden" name="docId" value={detail.document.docId} />
+          <input type="hidden" name="tab" value="draft3" />
+          <label>
+            세그먼트 ID
+            <input type="text" name="segmentId" placeholder="001" />
+          </label>
+          <label>
+            변경 메모
+            <textarea name="changeNote" placeholder="왜 고쳤는지, B라인이 무엇을 유지해야 하는지 적습니다."></textarea>
+          </label>
+          <label>
+            수정 본문
+            <textarea name="humanText" placeholder="수정한 문장 또는 단락을 붙여 넣습니다."></textarea>
+          </label>
+          <button class="ol-btn ol-btn-sm ol-btn-primary" type="submit">수정 판단 저장</button>
+        </form>
+      </section>
+
+      <section class="ol-desk-side-panel">
+        <h3>현재 revision 기록</h3>
+        {revisionItems.length > 0 ? (
+          <div class="ol-desk-meta-list">
+            {revisionItems.map((revision) => (
+              <article>
+                <strong>{valueOf(revision, ["revision_id", "summary"])}</strong>
+                <p>{valueOf(revision, ["status", "stage"])} · {valueOf(revision, ["created_by"])} · {valueOf(revision, ["created_at"])}</p>
+                <small>
+                  {Array.isArray(revision.items)
+                    ? `${revision.items.length} issue items`
+                    : Array.isArray(revision.modified_segments)
+                      ? `${revision.modified_segments.length} modified segments`
+                      : "revision data"}
+                </small>
+              </article>
+            ))}
+          </div>
+        ) : <div class="ol-desk-empty">revision 기록 없음</div>}
+      </section>
+    </div>
+
+    <div class="ol-desk-human-grid">
+      <section class="ol-desk-side-panel">
+        <h3>draft3 handoff 생성</h3>
+        <form method="post" action="/api/review/handoff" class="ol-desk-inline-form">
+          <input type="hidden" name="projectId" value={projectId} />
+          <input type="hidden" name="docId" value={detail.document.docId} />
+          <label>
+            instruction summary
+            <textarea name="instructionSummary" placeholder="인간 확정 판단만 반영하고, 보류 항목은 유지할 것."></textarea>
+          </label>
+          {notes.length > 0 ? (
+            <div class="ol-desk-checklist">
+              <strong>included notes</strong>
+              {notes.slice().reverse().map((note) => (
+                <label class="ol-desk-checkitem">
+                  <input type="checkbox" name="includedNoteIds" value={valueOf(note, ["note_id"])} />
+                  <span>
+                    <strong>{noteSegmentLabel(note)}</strong>
+                    <small>{valueOf(note, ["body"])}</small>
+                  </span>
+                </label>
+              ))}
+            </div>
+          ) : (
+            <div class="ol-desk-empty">선택 가능한 감수 메모가 없습니다.</div>
+          )}
+          <button class="ol-btn ol-btn-sm ol-btn-primary" type="submit">handoff 생성</button>
+        </form>
+      </section>
+
+      <section class="ol-desk-side-panel">
+        <h3>현재 handoff</h3>
+        {detail.handoffData ? (
+          <div class="ol-desk-meta-list">
+            <article>
+              <strong>{valueOf(detail.handoffData, ["handoff_id"])}</strong>
+              <p>{valueOf(detail.handoffData, ["target_stage"])} · {valueOf(detail.handoffData, ["created_at"])}</p>
+              <small>
+                approved terms {Array.isArray(detail.handoffData.approved_terms) ? detail.handoffData.approved_terms.length : 0}
+                {" · "}
+                approved annotations {Array.isArray(detail.handoffData.approved_annotations) ? detail.handoffData.approved_annotations.length : 0}
+                {" · "}
+                approved tags {Array.isArray(detail.handoffData.approved_tags) ? detail.handoffData.approved_tags.length : 0}
+              </small>
+            </article>
+            <article>
+              <strong>instruction</strong>
+              <small>{valueOf(detail.handoffData, ["instruction_summary"])}</small>
+            </article>
+          </div>
+        ) : <div class="ol-desk-empty">생성된 handoff 없음</div>}
+      </section>
+    </div>
+
+    <div class="ol-desk-human-grid">
+      <section class="ol-desk-side-panel">
+        <h3>B라인 / 최종 원고 상태</h3>
+        <div class="ol-desk-meta-list">
+          <article>
+            <strong>현재 상태</strong>
+            <p>{detail.document.currentStatus} · {detail.document.displayStatus}</p>
+            <small>{detail.document.nextAction || "다음 작업 없음"}</small>
+          </article>
+          <article>
+            <strong>산출물</strong>
+            <p>
+              draft3 {detail.document.assets.draft3 ? "ready" : "missing"}
+              {" · "}
+              draft4 {detail.document.assets.draft4 ? "ready" : "missing"}
+              {" · "}
+              handoff {detail.document.assets.handoffDraft3 ? "ready" : "missing"}
+            </p>
+          </article>
+          <article>
+            <strong>비교 권장</strong>
+            <small>3차 생성본은 draft2 또는 handoff 기준으로, 4차 원고는 draft3와 병렬 비교합니다.</small>
+          </article>
+        </div>
+      </section>
+
+      <section class="ol-desk-side-panel">
+        <h3>최종 승인 / Revision Cycle</h3>
+        <form method="post" action="/api/review/final-approve" class="ol-desk-inline-form">
+          <input type="hidden" name="projectId" value={projectId} />
+          <input type="hidden" name="docId" value={detail.document.docId} />
+          <label>
+            최종 승인 메모
+            <textarea name="approvalNote" placeholder="문체, 용어, 각주, 태그 최종 확인 완료 메모"></textarea>
+          </label>
+          <button class="ol-btn ol-btn-sm ol-btn-primary" type="submit">최종 승인</button>
+        </form>
+        <form method="post" action="/api/review/revision-reopen" class="ol-desk-inline-form" style="margin-top: 14px;">
+          <input type="hidden" name="projectId" value={projectId} />
+          <input type="hidden" name="docId" value={detail.document.docId} />
+          <label>
+            revision reopen 사유
+            <textarea name="reason" placeholder="final_done 이후 수정이 필요한 이유를 적습니다."></textarea>
+          </label>
+          <button class="ol-btn ol-btn-sm ol-btn-outline" type="submit">revision cycle 다시 열기</button>
+        </form>
+      </section>
+    </div>
+  </section>
+</AppShell>

@@ -1,0 +1,99 @@
+---
+import "../styles/global.css";
+import AppShell from "../components/AppShell.astro";
+import { getProjectIds, loadProjectTags } from "../lib/content-asset";
+import { resolveProjectId } from "../lib/app-state";
+
+const projects = await getProjectIds();
+const projectId = resolveProjectId(projects, Astro.url.searchParams.get("project"));
+
+if (!projectId) {
+  throw new Error("No Contents-Asset projects found.");
+}
+
+const tags = await loadProjectTags(projectId);
+const savedState = Astro.url.searchParams.get("saved");
+---
+
+<AppShell title="OL-DESK · 태그" projectId={projectId} projects={projects} activeMenu="tags">
+  <section slot="hero" class="ol-card">
+    <div class="ol-desk-panel-head">
+      <div>
+        <div class="ol-kicker">Tags</div>
+        <h1>태그</h1>
+        <p>인명, 지명, 교리 주제처럼 나중에 다시 찾아야 할 단서를 정리합니다.</p>
+      </div>
+      <div class="ol-desk-chip-row">
+        <span class="ol-badge">tags {tags.length}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="ol-card">
+    {savedState === "tag" && <div class="ol-desk-flash">태그를 저장했습니다.</div>}
+    <details class="ol-desk-side-panel ol-desk-add-panel-block">
+      <summary>신규 태그 추가</summary>
+      <form method="post" action="/api/review/tag" class="ol-desk-inline-form">
+        <input type="hidden" name="projectId" value={projectId} />
+        <input type="hidden" name="docId" value="project-wide" />
+        <input type="hidden" name="returnTo" value={`/tags?project=${projectId}`} />
+        <label>
+          태그명
+          <input type="text" name="name" placeholder="인명, 지명, 교리 주제" />
+        </label>
+        <label>
+          상태
+          <select name="status">
+            {["candidate", "approved", "hold"].map((status) => (
+              <option value={status}>{status}</option>
+            ))}
+          </select>
+        </label>
+        <button class="ol-btn ol-btn-sm ol-btn-outline" type="submit">태그 추가</button>
+      </form>
+    </details>
+    {tags.length > 0 ? (
+      <div class="ol-desk-table-wrap">
+        <table class="ol-desk-table">
+          <thead>
+            <tr>
+              <th>태그</th>
+              <th>상태</th>
+              <th>문서</th>
+              <th>작성자</th>
+              <th>편집</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tags.map((tag) => (
+              <tr>
+                <td><strong>{tag.name}</strong></td>
+                <td><span class="ol-badge">{tag.status}</span></td>
+                <td>{tag.firstDocId || "-"}</td>
+                <td>{tag.createdBy || "-"}</td>
+                <td>
+                  <form method="post" action="/api/review/tag" class="ol-desk-inline-form ol-desk-inline-form-tight">
+                    <input type="hidden" name="projectId" value={projectId} />
+                    <input type="hidden" name="tagId" value={tag.tagId} />
+                    <input type="hidden" name="returnTo" value={`/tags?project=${projectId}`} />
+                    <label>
+                      상태
+                      <select name="status">
+                        {["candidate", "approved", "hold", "rejected", "deprecated"].map((status) => (
+                          <option value={status} selected={status === tag.status}>{status}</option>
+                        ))}
+                      </select>
+                    </label>
+                    <button class="ol-btn ol-btn-sm ol-btn-outline" type="submit">저장</button>
+                  </form>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ) : (
+      <div class="ol-desk-empty">현재 tags.json은 비어 있습니다.</div>
+    )}
+  </section>
+</AppShell>

@@ -1,0 +1,88 @@
+---
+import { MENUS } from "../lib/app-state";
+
+type Props = {
+  title: string;
+  projectId: string;
+  projects: string[];
+  activeMenu: string;
+};
+
+const { title, projectId, projects, activeMenu } = Astro.props;
+const visibleProjects = projects.filter((project) => project !== "_template");
+const createdState = Astro.url.searchParams.get("created");
+
+function withProject(href: string) {
+  return `${href}?project=${projectId}`;
+}
+---
+
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <div class="ol-app ol-desk-shell">
+      <header class="ol-header">
+        <div class="ol-container ol-header-inner">
+          <a class="ol-brand" href={withProject("/")}>
+            <span class="ol-brand-name">OL-DESK</span>
+            <span class="ol-brand-meta">Human translation desk</span>
+          </a>
+          <nav class="ol-nav" aria-label="주요 메뉴">
+            {MENUS.map((menu) => (
+              menu.href ? (
+                <a
+                  class:list={["ol-nav-link", activeMenu === menu.key && "is-active"]}
+                  href={withProject(menu.href)}
+                >
+                  {menu.label}
+                </a>
+              ) : (
+                <span class="ol-nav-link is-disabled">{menu.label}</span>
+              )
+            ))}
+          </nav>
+        </div>
+      </header>
+
+      <main class="ol-container ol-desk-main">
+        <section class="ol-desk-header">
+          <div class="ol-desk-toolbar">
+            <span class="ol-badge ol-badge-accent">Project</span>
+            <form class="ol-desk-project-switcher" method="get" action={Astro.url.pathname}>
+              <label>
+                <span class="sr-only">프로젝트 선택</span>
+                <select name="project">
+                  {visibleProjects.map((project) => (
+                    <option value={project} selected={project === projectId}>{project}</option>
+                  ))}
+                </select>
+              </label>
+              <button class="ol-btn ol-btn-sm ol-btn-outline" type="submit">열기</button>
+            </form>
+            <details class="ol-desk-project-create">
+              <summary class="ol-btn ol-btn-sm ol-btn-primary">신규 프로젝트 등록</summary>
+              <form method="post" action="/api/projects/create" class="ol-desk-inline-form">
+                <label>
+                  프로젝트 ID
+                  <input type="text" name="projectId" placeholder="my-new-project" />
+                </label>
+                <label>
+                  프로젝트 제목
+                  <input type="text" name="projectTitle" placeholder="My New Project" />
+                </label>
+                <button class="ol-btn ol-btn-sm ol-btn-outline" type="submit">생성</button>
+              </form>
+            </details>
+          </div>
+          {createdState === "project" && <div class="ol-desk-flash">신규 프로젝트를 생성했습니다.</div>}
+          <slot name="hero" />
+        </section>
+        <slot />
+      </main>
+    </div>
+  </body>
+</html>

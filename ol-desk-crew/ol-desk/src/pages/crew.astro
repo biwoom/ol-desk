@@ -1,0 +1,102 @@
+---
+import "../styles/global.css";
+import AppShell from "../components/AppShell.astro";
+import { getProjectIds, loadProjectDashboard } from "../lib/content-asset";
+import { resolveProjectId } from "../lib/app-state";
+
+const projects = await getProjectIds();
+const projectId = resolveProjectId(projects, Astro.url.searchParams.get("project"));
+
+if (!projectId) {
+  throw new Error("No Contents-Asset projects found.");
+}
+
+const dashboard = await loadProjectDashboard(projectId);
+const latestLogs = dashboard.logs.slice(0, 24);
+---
+
+<AppShell title="OL-DESK · 작업기록" projectId={projectId} projects={projects} activeMenu="crew">
+  <section slot="hero" class="ol-card">
+    <div class="ol-desk-panel-head">
+      <div>
+        <div class="ol-kicker">Work Records</div>
+        <h1>작업 기록</h1>
+        <p>원고가 어떤 과정을 거쳐 지금 상태가 되었는지 확인합니다.</p>
+      </div>
+      <div class="ol-desk-chip-row">
+        <span class="ol-badge">logs {dashboard.logs.length}</span>
+        <span class="ol-badge">issues {Object.keys(dashboard.summary.issueCounts).length}</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="ol-desk-grid">
+    <section class="ol-card">
+      <div class="ol-desk-panel-head">
+        <div>
+          <h2>최근 기록</h2>
+          <p>가장 최근 작업부터 확인합니다.</p>
+        </div>
+      </div>
+      <div class="ol-desk-log-list">
+        {latestLogs.map((log) => (
+          <article class="ol-desk-log-item">
+            <div class="ol-desk-log-meta">
+              <span class="ol-badge">{log.kind}</span>
+              <span class="ol-badge">{log.agentName}</span>
+              <span class="ol-badge">{log.stage}</span>
+              {log.docId && <span class="ol-badge">{log.docId}</span>}
+              {log.provenance && <span class="ol-badge ol-badge-accent">provenance</span>}
+            </div>
+            <strong>{log.summary || "summary 없음"}</strong>
+            <p>{log.nextAction || "다음 작업 없음"}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <aside class="ol-desk-stack">
+      <section class="ol-card ol-card-tight">
+        <div class="ol-desk-panel-head">
+          <div>
+            <h3>주의 항목</h3>
+            <p>반복해서 나온 이슈를 먼저 확인합니다.</p>
+          </div>
+        </div>
+        <div class="ol-desk-risk-list">
+          {Object.entries(dashboard.summary.issueCounts)
+            .sort((left, right) => right[1] - left[1])
+            .map(([key, count]) => (
+              <article class="ol-desk-risk-item">
+                <div class="ol-desk-log-meta">
+                  <span class="ol-badge">{key}</span>
+                  <span class="ol-badge">{count}</span>
+                </div>
+              </article>
+            ))}
+        </div>
+      </section>
+
+      <section class="ol-card ol-card-tight">
+        <div class="ol-desk-panel-head">
+          <div>
+            <h3>데이터 읽기 상태</h3>
+            <p>JSON 파일을 읽는 과정에서 발생한 오류입니다.</p>
+          </div>
+        </div>
+        {dashboard.summary.parseErrors.length > 0 ? (
+          <div class="ol-desk-risk-list">
+            {dashboard.summary.parseErrors.map((error) => (
+              <article class="ol-desk-risk-item">
+                <strong>Parse error</strong>
+                <p>{error}</p>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div class="ol-desk-empty">JSON parse error 없음</div>
+        )}
+      </section>
+    </aside>
+  </div>
+</AppShell>

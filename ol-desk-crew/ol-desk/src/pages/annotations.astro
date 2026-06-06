@@ -1,0 +1,116 @@
+---
+import "../styles/global.css";
+import AppShell from "../components/AppShell.astro";
+import { getProjectIds, loadProjectAnnotations } from "../lib/content-asset";
+import { resolveProjectId } from "../lib/app-state";
+
+const projects = await getProjectIds();
+const projectId = resolveProjectId(projects, Astro.url.searchParams.get("project"));
+
+if (!projectId) {
+  throw new Error("No Contents-Asset projects found.");
+}
+
+const annotations = await loadProjectAnnotations(projectId);
+const savedState = Astro.url.searchParams.get("saved");
+---
+
+<AppShell title="OL-DESK · 각주" projectId={projectId} projects={projects} activeMenu="annotations">
+  <section slot="hero" class="ol-card">
+    <div class="ol-desk-panel-head">
+      <div>
+        <div class="ol-kicker">Annotations</div>
+        <h1>각주 후보</h1>
+        <p>본문 흐름을 해치지 않는 보조 설명만 남기도록 각주 후보를 정리합니다.</p>
+      </div>
+      <div class="ol-desk-chip-row">
+        <span class="ol-badge">annotations {annotations.length}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="ol-card">
+    {savedState === "annotation" && <div class="ol-desk-flash">각주 상태를 저장했습니다.</div>}
+    <details class="ol-desk-side-panel ol-desk-add-panel-block">
+      <summary>신규 각주 추가</summary>
+      <form method="post" action="/api/review/annotation" class="ol-desk-inline-form">
+        <input type="hidden" name="projectId" value={projectId} />
+        <input type="hidden" name="returnTo" value={`/annotations?project=${projectId}`} />
+        <label>
+          문서 ID
+          <input type="text" name="docId" placeholder="gcb-src-004-salutation-and-intention" />
+        </label>
+        <label>
+          대상 텍스트
+          <input type="text" name="targetText" placeholder="Paṭiññā" />
+        </label>
+        <label>
+          유형
+          <select name="annotationType">
+            {["gloss", "source_note", "term_note", "context_note"].map((type) => (
+              <option value={type}>{type}</option>
+            ))}
+          </select>
+        </label>
+        <label>
+          각주 내용
+          <textarea name="annotationText" placeholder="본문 보조 설명을 적습니다."></textarea>
+        </label>
+        <label>
+          상태
+          <select name="status">
+            {["candidate", "approved", "hold"].map((status) => (
+              <option value={status}>{status}</option>
+            ))}
+          </select>
+        </label>
+        <button class="ol-btn ol-btn-sm ol-btn-outline" type="submit">각주 추가</button>
+      </form>
+    </details>
+    {annotations.length > 0 ? (
+      <div class="ol-desk-table-wrap">
+        <table class="ol-desk-table">
+          <thead>
+            <tr>
+              <th>대상 텍스트</th>
+              <th>유형</th>
+              <th>상태</th>
+              <th>문서</th>
+              <th>각주 내용</th>
+              <th>편집</th>
+            </tr>
+          </thead>
+          <tbody>
+            {annotations.map((annotation) => (
+              <tr>
+                <td><strong>{annotation.targetText}</strong></td>
+                <td>{annotation.annotationType}</td>
+                <td><span class="ol-badge">{annotation.status}</span></td>
+                <td><a href={`/translation/${annotation.firstDocId}?project=${projectId}`}>{annotation.firstDocId}</a></td>
+                <td>{annotation.annotationText}</td>
+                <td>
+                  <form method="post" action="/api/review/annotation" class="ol-desk-inline-form ol-desk-inline-form-tight">
+                    <input type="hidden" name="projectId" value={projectId} />
+                    <input type="hidden" name="annotationId" value={annotation.annotationId} />
+                    <input type="hidden" name="returnTo" value={`/annotations?project=${projectId}`} />
+                    <label>
+                      상태
+                      <select name="status">
+                        {["candidate", "approved", "hold", "rejected", "deprecated"].map((status) => (
+                          <option value={status} selected={status === annotation.status}>{status}</option>
+                        ))}
+                      </select>
+                    </label>
+                    <button class="ol-btn ol-btn-sm ol-btn-outline" type="submit">저장</button>
+                  </form>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    ) : (
+      <div class="ol-desk-empty">각주 데이터가 없습니다.</div>
+    )}
+  </section>
+</AppShell>

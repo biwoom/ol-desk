@@ -1,0 +1,102 @@
+---
+import "../styles/global.css";
+import AppShell from "../components/AppShell.astro";
+import { getProjectIds, loadProjectDashboard } from "../lib/content-asset";
+import { resolveProjectId, toneForStatus } from "../lib/app-state";
+
+const projects = await getProjectIds();
+const projectId = resolveProjectId(projects, Astro.url.searchParams.get("project"));
+
+if (!projectId) {
+  throw new Error("No Contents-Asset projects found.");
+}
+
+const dashboard = await loadProjectDashboard(projectId);
+const documents = dashboard.documents.slice(0, 40);
+---
+
+<AppShell title="OL-DESK · 진행" projectId={projectId} projects={projects} activeMenu="progress">
+  <section slot="hero" class="ol-card">
+    <div class="ol-desk-panel-head">
+      <div>
+        <div class="ol-kicker">Work Queue</div>
+        <h1>문서 진행 현황</h1>
+        <p>지금 읽을 수 있는 원고, 사람 판단이 필요한 문서, 전달 준비 상태를 문서 단위로 확인합니다.</p>
+      </div>
+      <div class="ol-desk-chip-row">
+        <span class="ol-badge">docs {dashboard.summary.documentCount}</span>
+        <span class="ol-badge">status types {Object.keys(dashboard.summary.statusCounts).length}</span>
+        <span class="ol-badge">handoff {dashboard.summary.handoffDraft3Count}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="ol-card">
+    <div class="ol-desk-panel-head">
+      <div>
+        <h2>문서 목록</h2>
+          <p>제목, 상태, 다음 작업을 보고 바로 번역 화면으로 이동합니다.</p>
+      </div>
+    </div>
+    <div class="ol-desk-table-wrap">
+      <table class="ol-desk-table">
+        <thead>
+          <tr>
+            <th>문서</th>
+            <th>상태</th>
+            <th>담당</th>
+            <th>산출물</th>
+            <th>handoff</th>
+            <th>리스크</th>
+            <th>열기</th>
+          </tr>
+        </thead>
+        <tbody>
+          {documents.map((document) => (
+            <tr>
+              <td>
+                <strong>{document.title}</strong>
+                <div class="ol-brand-meta">{document.docId}</div>
+              </td>
+              <td>
+                <span class="ol-desk-status" data-tone={toneForStatus(document.currentStatus)}>
+                  {document.displayStatus}
+                </span>
+                <div class="ol-brand-meta" style="margin-top:6px">{document.nextAction || "다음 작업 대기"}</div>
+              </td>
+              <td>{document.currentOwner || "-"}</td>
+              <td>
+                <div class="ol-desk-chip-row">
+                  {document.assets.normalized && <span class="ol-badge">normalized</span>}
+                  {document.assets.segments && <span class="ol-badge">segments</span>}
+                  {document.assets.draft1 && <span class="ol-badge">draft1</span>}
+                  {document.assets.draft2 && <span class="ol-badge">draft2</span>}
+                  {document.assets.draft3 && <span class="ol-badge">draft3</span>}
+                  {document.assets.draft4 && <span class="ol-badge">draft4</span>}
+                </div>
+              </td>
+              <td>
+                <div class="ol-desk-chip-row">
+                  {document.assets.handoffDraft3 ? (
+                    <span class="ol-badge ol-badge-accent">draft3 handoff</span>
+                  ) : document.currentStatus === "human_editing" ? (
+                    <span class="ol-badge">editing</span>
+                  ) : (
+                    <span class="ol-brand-meta">-</span>
+                  )}
+                </div>
+              </td>
+              <td>
+                <div class="ol-desk-chip-row">
+                  {document.riskIssues.slice(0, 2).map((issue) => <span class="ol-badge">{issue.key}</span>)}
+                  {document.provenanceIssues.slice(0, 1).map((issue) => <span class="ol-badge ol-badge-accent">{issue.key}</span>)}
+                </div>
+              </td>
+                <td><a class="ol-btn ol-btn-sm ol-btn-outline" href={`/translation/${document.docId}?project=${projectId}`}>번역뷰</a></td>
+              </tr>
+            ))}
+          </tbody>
+      </table>
+    </div>
+  </section>
+</AppShell>

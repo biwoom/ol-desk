@@ -1,87 +1,158 @@
 ---
-const menus = ["CREW", "진행", "번역", "용어", "각주", "태그", "관리"];
+import "../styles/global.css";
+import AppShell from "../components/AppShell.astro";
+import { getProjectIds, loadProjectDashboard } from "../lib/content-asset";
+import { resolveProjectId } from "../lib/app-state";
+
+const projects = await getProjectIds();
+const projectId = resolveProjectId(projects, Astro.url.searchParams.get("project"));
+
+if (!projectId) {
+  throw new Error("No Contents-Asset projects found.");
+}
+
+const dashboard = await loadProjectDashboard(projectId);
+const highlighted = dashboard.documents
+  .filter((document) =>
+    document.currentStatus === "human_editing" ||
+    document.currentStatus === "draft3_handoff_ready" ||
+    document.assets.draft2 ||
+    document.riskIssues.length > 0
+  )
+  .slice(0, 6);
+const humanQueue = dashboard.documents.filter((document) =>
+  document.currentStatus === "human_editing" ||
+  document.currentStatus === "draft3_handoff_ready" ||
+  document.assets.draft2
+);
+const riskQueue = dashboard.documents.filter((document) => document.riskIssues.length > 0 || document.provenanceIssues.length > 0);
 ---
 
-<html lang="ko">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>OL-DESK</title>
-  </head>
-  <body>
-    <main>
-      <header>
-        <h1>OL-DESK</h1>
-        <p>불교전문문헌 번역 Crew 작업 대시보드</p>
-      </header>
-      <nav aria-label="주요 메뉴">
-        {menus.map((menu) => <a href="#">{menu}</a>)}
-      </nav>
-      <section>
-        <h2>초기 상태</h2>
-        <p>이 화면은 기초 세팅용 시작 페이지입니다. 실제 기능은 Contents-Asset 파일 읽기/쓰기 API와 연결하여 구현합니다.</p>
+<AppShell title="OL-DESK" projectId={projectId} projects={projects} activeMenu="overview">
+  <section slot="hero" class="ol-card">
+    <div class="ol-desk-panel-head">
+      <div>
+        <div class="ol-kicker">Review Desk</div>
+        <h1>{dashboard.summary.projectTitle}</h1>
+        <p>
+          오늘 감수자가 확인해야 할 문서, 수정 가능한 원고, 보류 판단을 한 화면에서 시작합니다.
+        </p>
+      </div>
+      <div class="ol-desk-chip-row">
+        <span class="ol-badge">Updated {dashboard.summary.updatedAt.slice(0, 10)}</span>
+        <span class="ol-badge">Issues {Object.keys(dashboard.summary.issueCounts).length}</span>
+        <span class="ol-badge">Parse errors {dashboard.summary.parseErrors.length}</span>
+        <span class="ol-badge">Draft3 handoff {dashboard.summary.handoffDraft3Count}</span>
+      </div>
+    </div>
+    <div class="ol-desk-stat-grid">
+      <div class="ol-desk-stat">
+        <div class="ol-mono-label">전체 문서</div>
+        <div class="ol-desk-stat-value">{dashboard.summary.documentCount}</div>
+      </div>
+      <div class="ol-desk-stat">
+        <div class="ol-mono-label">감수 가능</div>
+        <div class="ol-desk-stat-value">{humanQueue.length}</div>
+      </div>
+      <div class="ol-desk-stat">
+        <div class="ol-mono-label">2차 원고</div>
+        <div class="ol-desk-stat-value">{dashboard.summary.draft2Count}</div>
+      </div>
+      <div class="ol-desk-stat">
+        <div class="ol-mono-label">3차 전달</div>
+        <div class="ol-desk-stat-value">{dashboard.summary.handoffDraft3Count}</div>
+      </div>
+      <div class="ol-desk-stat">
+        <div class="ol-mono-label">주의 필요</div>
+        <div class="ol-desk-stat-value">{riskQueue.length}</div>
+      </div>
+      <div class="ol-desk-stat">
+        <div class="ol-mono-label">기록된 이슈</div>
+        <div class="ol-desk-stat-value">{Object.values(dashboard.summary.issueCounts).reduce((sum, count) => sum + count, 0)}</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="ol-desk-grid">
+    <div class="ol-desk-stack">
+      <section class="ol-card">
+        <div class="ol-desk-panel-head">
+          <div>
+            <h2>주요 작업</h2>
+            <p>감수자가 자주 쓰는 화면을 우선 배치했습니다.</p>
+          </div>
+        </div>
+        <div class="ol-desk-artifact-list">
+          <a class="ol-desk-artifact ol-desk-linkcard" href={`/progress?project=${projectId}`}>
+            <strong>진행</strong>
+            <span>문서 큐와 다음 작업 확인</span>
+          </a>
+          <a class="ol-desk-artifact ol-desk-linkcard" href={`/translation?project=${projectId}`}>
+            <strong>번역</strong>
+            <span>원고 비교, 3차/4차 수정, 용어·각주 판단</span>
+          </a>
+          <a class="ol-desk-artifact ol-desk-linkcard" href={`/terms?project=${projectId}`}>
+            <strong>용어</strong>
+            <span>용어 후보 승인, 보류, 반려</span>
+          </a>
+          <a class="ol-desk-artifact ol-desk-linkcard" href={`/annotations?project=${projectId}`}>
+            <strong>각주</strong>
+            <span>각주 후보 정리와 본문 연결</span>
+          </a>
+          <a class="ol-desk-artifact ol-desk-linkcard" href={`/crew?project=${projectId}`}>
+            <strong>작업기록</strong>
+            <span>에이전트 작업 기록 확인</span>
+          </a>
+          <a class="ol-desk-artifact ol-desk-linkcard" href={`/admin?project=${projectId}`}>
+            <strong>관리</strong>
+            <span>데이터 오류, export, 최종 이력 점검</span>
+          </a>
+        </div>
       </section>
-    </main>
-  </body>
-</html>
 
-<style>
-  body {
-    margin: 0;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    color: #1f2933;
-    background: #f7f8fa;
-  }
+      <section class="ol-card">
+        <div class="ol-desk-panel-head">
+          <div>
+            <h2>바로 이어서 볼 문서</h2>
+            <p>수정 가능하거나 확인이 필요한 문서를 먼저 보여줍니다.</p>
+          </div>
+        </div>
+        <div class="ol-desk-risk-list">
+          {highlighted.map((document) => (
+            <article class="ol-desk-risk-item">
+              <div class="ol-desk-log-meta">
+                <span class="ol-badge">{document.docId}</span>
+                {document.assets.normalized && <span class="ol-badge">normalized</span>}
+                {document.assets.draft1 && <span class="ol-badge">draft1</span>}
+                {document.assets.draft2 && <span class="ol-badge">draft2</span>}
+              </div>
+              <strong>{document.title}</strong>
+              <p>{document.nextAction || "next action 없음"}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+    </div>
 
-  main {
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 32px 20px;
-  }
-
-  header {
-    margin-bottom: 24px;
-  }
-
-  h1 {
-    margin: 0 0 8px;
-    font-size: 32px;
-    letter-spacing: 0;
-  }
-
-  p {
-    margin: 0;
-    line-height: 1.6;
-  }
-
-  nav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 24px;
-  }
-
-  a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 36px;
-    padding: 0 12px;
-    border: 1px solid #d1d7de;
-    border-radius: 6px;
-    color: #1f2933;
-    text-decoration: none;
-    background: #ffffff;
-  }
-
-  section {
-    padding: 20px 0;
-    border-top: 1px solid #d1d7de;
-  }
-
-  h2 {
-    margin: 0 0 8px;
-    font-size: 20px;
-    letter-spacing: 0;
-  }
-</style>
-
+    <aside class="ol-desk-stack">
+      <section class="ol-card ol-card-tight">
+        <div class="ol-desk-panel-head">
+          <div>
+            <h3>작업 흐름</h3>
+            <p>대부분의 감수 작업은 번역 화면에서 끝내고, 관리 화면은 이상 징후 확인에만 사용합니다.</p>
+          </div>
+        </div>
+        <div class="ol-desk-risk-list">
+          <article class="ol-desk-risk-item">
+            <strong>1. 진행에서 문서 선택</strong>
+            <p>상태와 다음 작업을 확인한 뒤 번역 화면으로 이동합니다.</p>
+          </article>
+          <article class="ol-desk-risk-item">
+            <strong>2. 번역 화면에서 판단</strong>
+            <p>원고 비교, 용어/각주/태그, 메모, handoff를 같은 흐름에서 처리합니다.</p>
+          </article>
+        </div>
+      </section>
+    </aside>
+  </div>
+</AppShell>
