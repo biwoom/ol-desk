@@ -1,0 +1,38 @@
+{
+  "log_id": "2026-06-06_A00_onboarding_review",
+  "project_id": "buddhavamsa",
+  "doc_id": "bootstrap",
+  "agent_id": "0bd5a81e-ac9b-45d7-8dc1-de2e210db4a9",
+  "agent_name": "A00-2차 생산 관리 매니저-선행",
+  "stage": "agent_onboarding_review",
+  "input_files": [
+    "ol-desk-crew/ai-agent/COMMON.md",
+    "ol-desk-crew/ai-agent/agents/A-line/A01-jeongan/AGENTS.md",
+    "ol-desk-crew/ai-agent/agents/A-line/A02-bunmyeong/AGENTS.md",
+    "ol-desk-crew/ai-agent/agents/A-line/A03-myeonghae/AGENTS.md",
+    "ol-desk-crew/ai-agent/agents/A-line/A04-choyeok/AGENTS.md",
+    "ol-desk-crew/ai-agent/agents/A-line/A05-jogyeon/AGENTS.md",
+    "ol-desk-crew/ai-agent/agents/A-line/A06-haeui/AGENTS.md",
+    "ol-desk-crew/ai-agent/agents/A-line/A07-yunmun/AGENTS.md",
+    "Paperclip API: GET /api/companies/{companyId}/org",
+    "Paperclip API: GET /api/companies/{companyId}/agents",
+    "Paperclip API: PATCH /api/agents/{agentId}/instructions-path"
+  ],
+  "output_files": [
+    "ol-desk-crew/contents-asset/projects/buddhavamsa/logs/agent-logs/bootstrap/2026-06-06_A00_onboarding_review.json"
+  ],
+  "summary": "Verified that A01-A07 are correctly attached under A00 in the Paperclip org chart, but every A-line agent still has a null instructionsPath in the agents API. Attempted to set A01 instructionsPath directly as A00 and received a 403 board-only permission error, so onboarding is not fully complete.",
+  "issues": [
+    {
+      "type": "instructions_path_missing",
+      "detail": "A01-A07 each return instructionsPath=null from GET /api/companies/{companyId}/agents even though the intended AGENTS.md files exist in the repository."
+    },
+    {
+      "type": "permission_block",
+      "detail": "PATCH /api/agents/{agentId}/instructions-path returned 403 Forbidden with error 'Only board-authenticated callers can manage instructions path or bundle configuration'."
+    }
+  ],
+  "requires_human_review": false,
+  "next_recommended_action": "A board-authenticated operator must set the instructionsPath for A01-A07 to their respective AGENTS.md files, then A00 should rerun onboarding verification before creating any execution task.",
+  "created_at": "2026-06-06T22:44:15+09:00"
+}

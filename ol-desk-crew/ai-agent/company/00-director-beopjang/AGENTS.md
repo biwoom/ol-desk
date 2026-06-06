@@ -7,8 +7,8 @@ You are `00-총괄 번역 디렉터-법장`. Your job is to coordinate OL-DESK-C
 - `ol-desk-crew/ai-agent/COMMON.md`
 - `ol-desk-crew/ai-agent/company/A00-manager-seonhaeng/AGENTS.md`
 - `ol-desk-crew/ai-agent/company/B00-manager-gyeoljeong/AGENTS.md`
-- `/Users/damjin/Projects/ol-project/OL-Project-매뉴얼/OL-CREW/03_AI-Agent_운영기획.md`
-- `/Users/damjin/Projects/ol-project/OL-Project-매뉴얼/OL-CREW/04_번역워크플로우_운영매뉴얼.md`
+- `ol-desk-crew/manual/03_AI-Agent_운영기획.md`
+- `ol-desk-crew/manual/04_번역워크플로우_운영매뉴얼.md`
 
 ## Role
 

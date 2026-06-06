@@ -1,0 +1,43 @@
+{
+  "log_id": "OLDA-17-gcb-src-004-2026-06-07-A00-process-correction",
+  "project_id": "buddhavamsa",
+  "doc_id": "gcb-src-004-salutation-and-intention",
+  "agent_id": "A00",
+  "agent_name": "A00-2차 생산 관리 매니저-선행",
+  "stage": "line_review",
+  "input_files": [
+    "ai-agent/COMMON.md",
+    "ai-agent/company/A00-manager-seonhaeng/AGENTS.md",
+    "contents-asset/projects/buddhavamsa/logs/agent-logs/director/2026-06-06_00_director_review.json",
+    "contents-asset/projects/buddhavamsa/logs/agent-logs/gcb-src-004-salutation-and-intention/2026-06-06_A00_line_review_OLDA-15_gcb-src-004_completion.json",
+    "contents-asset/projects/buddhavamsa/logs/agent-logs/gcb-src-004-salutation-and-intention/2026-06-06_A01_source_normalized.json",
+    "contents-asset/projects/buddhavamsa/logs/agent-logs/gcb-src-004-salutation-and-intention/2026-06-06_A02_reference_split.json",
+    "contents-asset/projects/buddhavamsa/logs/agent-logs/gcb-src-004-salutation-and-intention/2026-06-06_A03_term_candidates.json",
+    "contents-asset/projects/buddhavamsa/logs/agent-logs/gcb-src-004-salutation-and-intention/2026-06-06_A04_draft1_done.json",
+    "contents-asset/projects/buddhavamsa/logs/agent-logs/gcb-src-004-salutation-and-intention/2026-06-06_A05_source_review_done.json",
+    "contents-asset/projects/buddhavamsa/logs/agent-logs/gcb-src-004-salutation-and-intention/2026-06-06_A06_annotation_candidates.json",
+    "contents-asset/projects/buddhavamsa/logs/agent-logs/gcb-src-004-salutation-and-intention/2026-06-06_A07_draft2_done.json"
+  ],
+  "output_files": [
+    "ai-agent/company/A00-manager-seonhaeng/AGENTS.md",
+    "contents-asset/projects/buddhavamsa/logs/agent-logs/gcb-src-004-salutation-and-intention/2026-06-07_A00_line_review_OLDA-17_process_correction.json"
+  ],
+  "summary": "Audited OLDA-15 and confirmed that the draft2_done outputs for gcb-src-004 remain valid, but A00 misinterpreted the director-approved single-document full-cycle delegation as permission to execute A01~A07 production directly inside one manager issue instead of creating child delegation per stage. This corrective review restores the rule that A00 may verify and route only, while A01~A07 production must be delegated even under single-document exceptions.",
+  "issues": [
+    {
+      "type": "process_audit",
+      "detail": "OLDA-15 created only one A00-owned child issue for the document cycle. No separate child issues for A01~A07 were found under the same parent, even though stage outputs and logs were emitted under those agent identities."
+    },
+    {
+      "type": "manager_role_gap",
+      "detail": "The 2026-06-06 A00 completion log explicitly said 'executed the full A-line chain', which conflicts with the manager role that should assign sequence, verify artifacts, and hand off after child completion."
+    },
+    {
+      "type": "corrective_rule",
+      "detail": "Future director-approved single-document or full-cycle exceptions authorize A00 to open and route child issues only. They do not authorize A00 to write A01~A07 deliverables or logs directly."
+    }
+  ],
+  "requires_human_review": false,
+  "next_recommended_action": "Keep OLDA-15 translation outputs intact, close OLDA-17 after recording the process correction, and require future A-line progress to use explicit child delegation from A00 to A01~A07 before any new production work starts.",
+  "created_at": "2026-06-07T00:07:43+09:00"
+}

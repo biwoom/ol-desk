@@ -1,0 +1,25 @@
+{
+  "log_id": "gcb-src-004-salutation-and-intention-2026-06-06-A03-term_candidates",
+  "project_id": "buddhavamsa",
+  "doc_id": "gcb-src-004-salutation-and-intention",
+  "agent_id": "A03",
+  "agent_name": "A03-용어 후보 에이전트-명해",
+  "stage": "term_candidates_done",
+  "input_files": [
+    "contents-asset/projects/buddhavamsa/assets/source/normalized/gcb-src-004-salutation-and-intention.md",
+    "contents-asset/projects/buddhavamsa/data/terms/terms.json"
+  ],
+  "output_files": [
+    "contents-asset/projects/buddhavamsa/data/terms/terms.json"
+  ],
+  "summary": "Added provisional doctrinal and title-related term candidates needed for the first translation pass.",
+  "issues": [
+    {
+      "type": "needs_human_judgment",
+      "detail": "Paṭiññā title nuance and the working Korean renderings for Dhamma, Saṅgha, and Nibbāna remain provisional."
+    }
+  ],
+  "requires_human_review": true,
+  "next_recommended_action": "Use approved list fallback none; carry candidate terms into A04 without treating them as fixed house style.",
+  "created_at": "2026-06-07T00:00:00+09:00"
+}

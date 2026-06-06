@@ -1,0 +1,11 @@
+/* ① Tailwind */
+@import "tailwindcss";
+
+/* ② Basecoat — shadcn/ui 계열 컴포넌트 기반 */
+@import "basecoat-css";
+
+/* ③ OL 디자인 토큰 (다음 단계에서 추가) */
+@import "./tokens.css";
+
+/* ④ OL 컴포넌트 스타일 (다음 단계에서 추가) */
+@import "./ol-components.css";

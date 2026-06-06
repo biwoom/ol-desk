@@ -1,0 +1,23 @@
+{
+  "log_id": "2026-06-06_A00_intake_bootstrap",
+  "project_id": "buddhavamsa",
+  "doc_id": "bootstrap",
+  "agent_id": "0bd5a81e-ac9b-45d7-8dc1-de2e210db4a9",
+  "agent_name": "A00-2차 생산 관리 매니저-선행",
+  "stage": "source_ready_bootstrap",
+  "input_files": [
+    "contents-asset/projects/buddhavamsa/assets/source/raw/",
+    "contents-asset/projects/buddhavamsa/data/documents.json",
+    "contents-asset/projects/buddhavamsa/data/status/"
+  ],
+  "output_files": [
+    "contents-asset/projects/buddhavamsa/data/documents.json",
+    "contents-asset/projects/buddhavamsa/data/status/",
+    "contents-asset/projects/buddhavamsa/logs/agent-logs/bootstrap/2026-06-06_A00_intake_bootstrap.json"
+  ],
+  "summary": "Bootstrapped Buddhavamsa A-line intake by registering 208 raw markdown documents and creating source_ready status JSON for each document. No translation outputs were created.",
+  "issues": [],
+  "requires_human_review": false,
+  "next_recommended_action": "Delegate the first A01 queue starting with gcb-src-001 through gcb-src-004 for source normalization.",
+  "created_at": "2026-06-06T21:44:00+09:00"
+}

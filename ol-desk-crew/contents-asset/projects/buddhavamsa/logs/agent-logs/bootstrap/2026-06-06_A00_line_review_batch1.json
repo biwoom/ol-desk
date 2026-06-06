@@ -1,0 +1,29 @@
+{
+  "log_id": "buddhavamsa-a00-line-review-batch1-2026-06-06",
+  "project_id": "buddhavamsa",
+  "doc_id": "bootstrap",
+  "agent_id": "A00",
+  "agent_name": "A00-2차 생산 관리 매니저-선행",
+  "stage": "line_review",
+  "input_files": [
+    "data/documents.json",
+    "data/status/gcb-src-001-preface-to-the-revised-version.json",
+    "data/status/gcb-src-002-the-author.json",
+    "data/status/gcb-src-003-the-author-s-introduction.json",
+    "data/status/gcb-src-004-salutation-and-intention.json",
+    "assets/source/raw/gcb-src-001-preface-to-the-revised-version.md",
+    "assets/source/raw/gcb-src-002-the-author.md",
+    "assets/source/raw/gcb-src-003-the-author-s-introduction.md",
+    "assets/source/raw/gcb-src-004-salutation-and-intention.md"
+  ],
+  "output_files": [
+    "logs/agent-logs/bootstrap/2026-06-06_A00_line_review_batch1.json"
+  ],
+  "summary": "Verified the first Buddhavamsa A-line batch remains eligible for A01. All four doc_ids are registered in data/documents.json, all four status files remain at source_ready, all four raw markdown inputs exist, and no normalized markdown or segments JSON outputs exist yet.",
+  "issues": [
+    "No A01 execution agent is currently visible in the Paperclip company agents API; delegation will be created as a child issue for assignment rather than directly assigned to an A01 agent."
+  ],
+  "requires_human_review": false,
+  "next_recommended_action": "Create and assign the first A01 source-normalization batch issue for gcb-src-001 through gcb-src-004.",
+  "created_at": "2026-06-06T22:00:00+09:00"
+}

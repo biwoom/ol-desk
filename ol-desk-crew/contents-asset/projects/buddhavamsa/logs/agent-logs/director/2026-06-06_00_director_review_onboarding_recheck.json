@@ -1,0 +1,67 @@
+{
+  "log_id": "2026-06-06_00_director_review_onboarding_recheck",
+  "project_id": "buddhavamsa",
+  "agent_id": "fde3c2c9-efdd-4aa7-9ff3-bb1ef89dfae5",
+  "agent_name": "00-총괄 번역 디렉터-법장",
+  "stage": "director_review",
+  "reviewed_documents": [
+    {
+      "doc_id": "bootstrap",
+      "scope": "A-line agent onboarding recheck for A01-A07"
+    }
+  ],
+  "delegated_tasks": [],
+  "blocked_documents": [],
+  "error_documents": [],
+  "human_decisions_needed": [],
+  "next_recommended_action": "A00 may proceed with future onboarding-adjacent coordination or first-batch approval handling when a separate execution issue is created; do not start source processing from OLDA-9 itself.",
+  "verification": {
+    "reporting_line_confirmed": true,
+    "instruction_bundle_confirmed": true,
+    "agents": [
+      {
+        "agent_name": "A01-기초 정리 에이전트-정안",
+        "agent_id": "30fdaa42-ae78-44cb-833d-0fd8f3df20cd",
+        "reports_to": "0bd5a81e-ac9b-45d7-8dc1-de2e210db4a9",
+        "instruction_path": "/Users/damjin/.paperclip/instances/default/companies/6dd0ddea-7dbf-4cd1-a4ef-17792988e428/agents/30fdaa42-ae78-44cb-833d-0fd8f3df20cd/instructions/AGENTS.md"
+      },
+      {
+        "agent_name": "A02-참고번역 분리 에이전트-분명",
+        "agent_id": "a333cea9-9e9a-4775-a777-e8e5590414dc",
+        "reports_to": "0bd5a81e-ac9b-45d7-8dc1-de2e210db4a9",
+        "instruction_path": "/Users/damjin/.paperclip/instances/default/companies/6dd0ddea-7dbf-4cd1-a4ef-17792988e428/agents/a333cea9-9e9a-4775-a777-e8e5590414dc/instructions/AGENTS.md"
+      },
+      {
+        "agent_name": "A03-용어 후보 에이전트-명해",
+        "agent_id": "66f37b1e-cc85-47cb-a7cb-081b89a3df2f",
+        "reports_to": "0bd5a81e-ac9b-45d7-8dc1-de2e210db4a9",
+        "instruction_path": "/Users/damjin/.paperclip/instances/default/companies/6dd0ddea-7dbf-4cd1-a4ef-17792988e428/agents/66f37b1e-cc85-47cb-a7cb-081b89a3df2f/instructions/AGENTS.md"
+      },
+      {
+        "agent_name": "A04-1차 번역 에이전트-초역",
+        "agent_id": "33153eac-3d6d-4bfa-afed-69b6c2b4cd16",
+        "reports_to": "0bd5a81e-ac9b-45d7-8dc1-de2e210db4a9",
+        "instruction_path": "/Users/damjin/.paperclip/instances/default/companies/6dd0ddea-7dbf-4cd1-a4ef-17792988e428/agents/33153eac-3d6d-4bfa-afed-69b6c2b4cd16/instructions/AGENTS.md"
+      },
+      {
+        "agent_name": "A05-원문대조 감수 에이전트-조견",
+        "agent_id": "1c4bcd52-78f4-4bca-a99a-286805028c1b",
+        "reports_to": "0bd5a81e-ac9b-45d7-8dc1-de2e210db4a9",
+        "instruction_path": "/Users/damjin/.paperclip/instances/default/companies/6dd0ddea-7dbf-4cd1-a4ef-17792988e428/agents/1c4bcd52-78f4-4bca-a99a-286805028c1b/instructions/AGENTS.md"
+      },
+      {
+        "agent_name": "A06-각주 후보 에이전트-해의",
+        "agent_id": "498ca153-746d-4d08-8422-db372839a62d",
+        "reports_to": "0bd5a81e-ac9b-45d7-8dc1-de2e210db4a9",
+        "instruction_path": "/Users/damjin/.paperclip/instances/default/companies/6dd0ddea-7dbf-4cd1-a4ef-17792988e428/agents/498ca153-746d-4d08-8422-db372839a62d/instructions/AGENTS.md"
+      },
+      {
+        "agent_name": "A07-2차 번역 에이전트-윤문",
+        "agent_id": "0c224536-d284-4cdc-915f-25e690f1a635",
+        "reports_to": "0bd5a81e-ac9b-45d7-8dc1-de2e210db4a9",
+        "instruction_path": "/Users/damjin/.paperclip/instances/default/companies/6dd0ddea-7dbf-4cd1-a4ef-17792988e428/agents/0c224536-d284-4cdc-915f-25e690f1a635/instructions/AGENTS.md"
+      }
+    ]
+  },
+  "created_at": "2026-06-06T22:58:00+09:00"
+}

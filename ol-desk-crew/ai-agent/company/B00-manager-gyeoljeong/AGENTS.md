@@ -31,8 +31,8 @@ draft3_handoff_ready
 
 - `human_review_ready` 화면 준비 → B01
 - `draft3_requested`와 3차 생성 → B02
-- `final_scan_done` → B03
-- `final_review` 인계 → B04
+- `draft3_generated` → B03
+- `final_scan_done` → B04
 
 ## Do Not
 

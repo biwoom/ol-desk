@@ -1,0 +1,47 @@
+{
+  "log_id": "2026-06-06_B00_line_review_followup",
+  "project_id": "buddhavamsa",
+  "agent_id": "3ccd5839-0af2-4f83-beb2-c93f0a4f5ecc",
+  "agent_name": "B00-3차 확정 관리 매니저-결정",
+  "stage": "line_review_followup",
+  "input_files": [
+    "contents-asset/projects/buddhavamsa/data/documents.json",
+    "contents-asset/projects/buddhavamsa/data/status/",
+    "contents-asset/projects/buddhavamsa/data/revisions/",
+    "contents-asset/projects/buddhavamsa/handoff/draft3/",
+    "contents-asset/projects/buddhavamsa/outputs/manuscripts/draft1/",
+    "contents-asset/projects/buddhavamsa/outputs/manuscripts/draft2/",
+    "contents-asset/projects/buddhavamsa/outputs/manuscripts/draft3/",
+    "contents-asset/projects/buddhavamsa/outputs/manuscripts/draft4/",
+    "contents-asset/projects/buddhavamsa/logs/agent-logs/"
+  ],
+  "output_files": [
+    "contents-asset/projects/buddhavamsa/logs/agent-logs/director/2026-06-06_B00_line_review_followup.json"
+  ],
+  "summary": "Revalidated the Buddhavamsa B-line queue after A-line bootstrap. The project now has 208 registered documents and 208 per-document status files, but every document remains at source_ready. No revisions, draft1, draft2, draft3 handoff, draft3 manuscript, or draft4 manuscript files exist, so no document is eligible for B-line work.",
+  "issues": [
+    {
+      "type": "queue_empty",
+      "detail": "B-line actionable queue remains 0 for draft3_handoff_ready, draft3_requested, draft3_generated, final_scan_done, and final_review."
+    },
+    {
+      "type": "upstream_not_advanced",
+      "detail": "All 208 data/status/{doc_id}.json files are currently source_ready, so no document has reached draft2_done or human_review_ready."
+    },
+    {
+      "type": "revision_missing",
+      "detail": "contents-asset/projects/buddhavamsa/data/revisions/ contains 0 revision JSON files."
+    },
+    {
+      "type": "drafts_missing",
+      "detail": "outputs/manuscripts/draft1/, draft2/, draft3/, and draft4/ contain no manuscript files beyond placeholders."
+    },
+    {
+      "type": "handoff_missing",
+      "detail": "contents-asset/projects/buddhavamsa/handoff/draft3/ contains 0 draft3 handoff JSON files."
+    }
+  ],
+  "requires_human_review": false,
+  "next_recommended_action": "No B-line child tasks should be created yet. Resume B00 only when at least one doc_id has advanced through A-line to draft2_done or human_review_ready and a valid human-confirmed handoff/draft3/{doc_id}.json exists for B02 validation.",
+  "created_at": "2026-06-06T21:47:00+09:00"
+}

@@ -1,0 +1,48 @@
+{
+  "log_id": "2026-06-06_A00_line_review",
+  "project_id": "buddhavamsa",
+  "doc_id": "bootstrap",
+  "agent_id": "0bd5a81e-ac9b-45d7-8dc1-de2e210db4a9",
+  "agent_name": "A00-2차 생산 관리 매니저-선행",
+  "stage": "line_review",
+  "input_files": [
+    "contents-asset/projects/buddhavamsa/data/documents.json",
+    "contents-asset/projects/buddhavamsa/data/status/",
+    "contents-asset/projects/buddhavamsa/assets/source/raw/",
+    "contents-asset/projects/buddhavamsa/data/terms/terms.json",
+    "contents-asset/projects/buddhavamsa/data/annotations/annotations.json",
+    "contents-asset/projects/buddhavamsa/logs/agent-logs/director/2026-06-06_00_director_review.json"
+  ],
+  "output_files": [
+    "contents-asset/projects/buddhavamsa/logs/agent-logs/bootstrap/2026-06-06_A00_line_review.json"
+  ],
+  "summary": "Reviewed Buddhavamsa A-line intake prerequisites. Confirmed 208 raw source markdown files exist, but documents registry is empty and per-document status files are missing. Selected the first production-ready subset as gcb-src-001 through gcb-src-004 once registry and source_ready statuses are created.",
+  "issues": [
+    {
+      "type": "registry_missing",
+      "detail": "data/documents.json contains an empty documents array, so no doc_id is registered for A-line preflight."
+    },
+    {
+      "type": "status_missing",
+      "detail": "data/status/ contains no per-document status JSON files, so no document is provably in source_ready."
+    },
+    {
+      "type": "precondition_block",
+      "detail": "A01 requires a registered doc_id and current_status of not_started or source_ready. Those prerequisites are missing for every raw file."
+    }
+  ],
+  "requires_human_review": false,
+  "next_recommended_action": "Register gcb-src-001, gcb-src-002, gcb-src-003, and gcb-src-004 in data/documents.json and create matching data/status/{doc_id}.json files at source_ready before delegating A01.",
+  "queue_summary": {
+    "raw_markdown_count": 208,
+    "documents_registered": 0,
+    "status_files_present": 0,
+    "first_actionable_subset_after_bootstrap": [
+      "gcb-src-001-preface-to-the-revised-version",
+      "gcb-src-002-the-author",
+      "gcb-src-003-the-author-s-introduction",
+      "gcb-src-004-salutation-and-intention"
+    ]
+  },
+  "created_at": "2026-06-06T21:35:00+09:00"
+}

@@ -1,0 +1,50 @@
+{
+  "log_id": "2026-06-06_B00_onboarding_review",
+  "project_id": "buddhavamsa",
+  "doc_id": "director",
+  "agent_id": "3ccd5839-0af2-4f83-beb2-c93f0a4f5ecc",
+  "agent_name": "B00-3차 확정 관리 매니저-결정",
+  "stage": "onboarding_review",
+  "input_files": [
+    "ol-desk-crew/ai-agent/COMMON.md",
+    "ol-desk-crew/ai-agent/company/B00-manager-gyeoljeong/AGENTS.md",
+    "ol-desk-crew/ai-agent/agents/B-line/B01-cheongmun/AGENTS.md",
+    "ol-desk-crew/ai-agent/agents/B-line/B02-jeongban/AGENTS.md",
+    "ol-desk-crew/ai-agent/agents/B-line/B03-muru/AGENTS.md",
+    "ol-desk-crew/ai-agent/agents/B-line/B04-hoehyang/AGENTS.md",
+    "ol-desk-crew/manual/03_AI-Agent_운영기획.md",
+    "ol-desk-crew/manual/04_번역워크플로우_운영매뉴얼.md",
+    "ol-desk-crew/contents-asset/projects/buddhavamsa/data/documents.json",
+    "ol-desk-crew/contents-asset/projects/buddhavamsa/data/status/",
+    "ol-desk-crew/contents-asset/projects/buddhavamsa/data/revisions/",
+    "ol-desk-crew/contents-asset/projects/buddhavamsa/handoff/draft3/",
+    "ol-desk-crew/contents-asset/projects/buddhavamsa/logs/agent-logs/director/2026-06-06_B00_line_review.json",
+    "ol-desk-crew/contents-asset/projects/buddhavamsa/logs/agent-logs/director/2026-06-06_B00_line_review_followup.json"
+  ],
+  "output_files": [
+    "ol-desk-crew/ai-agent/company/B00-manager-gyeoljeong/AGENTS.md",
+    "ol-desk-crew/contents-asset/projects/buddhavamsa/logs/agent-logs/director/2026-06-06_B00_onboarding_review.json"
+  ],
+  "summary": "Confirmed B-line onboarding prerequisites for the Buddhavamsa project. The B01-B04 role documents, common rules, and workflow manual are present and aligned after correcting the B00 delegation map so B03 starts from draft3_generated and B04 starts from final_scan_done. Operationally, B-line remains idle because all 208 registered documents are still at source_ready, revisions/ is empty, and handoff/draft3/ contains no handoff JSON files.",
+  "issues": [
+    {
+      "type": "delegation_map_mismatch_fixed",
+      "detail": "Updated ol-desk-crew/ai-agent/company/B00-manager-gyeoljeong/AGENTS.md so the Delegation Map matches the Task Routing section and subordinate agent roles: draft3_generated -> B03, final_scan_done -> B04."
+    },
+    {
+      "type": "queue_empty",
+      "detail": "No document is actionable for B01-B04 yet because data/status/*.json reports source_ready for all 208 registered documents."
+    },
+    {
+      "type": "revision_missing",
+      "detail": "ol-desk-crew/contents-asset/projects/buddhavamsa/data/revisions/ contains no revision JSON beyond .gitkeep, so no document has reached human_review_ready."
+    },
+    {
+      "type": "handoff_missing",
+      "detail": "ol-desk-crew/contents-asset/projects/buddhavamsa/handoff/draft3/ contains no draft3 handoff JSON beyond .gitkeep, so B02/B03/B04 must not start."
+    }
+  ],
+  "requires_human_review": false,
+  "next_recommended_action": "Keep B00 dormant until A-line advances at least one doc_id to draft2_done or human_review_ready. Resume B00 when B01 can prepare revisions, and only route B02 after a human-confirmed handoff/draft3/{doc_id}.json exists and passes validation.",
+  "created_at": "2026-06-06T22:05:00+09:00"
+}

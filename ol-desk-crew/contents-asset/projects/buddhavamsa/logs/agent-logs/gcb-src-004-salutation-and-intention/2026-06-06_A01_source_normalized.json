@@ -1,0 +1,31 @@
+{
+  "log_id": "gcb-src-004-salutation-and-intention-2026-06-06-A01-source_normalized",
+  "project_id": "buddhavamsa",
+  "doc_id": "gcb-src-004-salutation-and-intention",
+  "agent_id": "A01",
+  "agent_name": "A01-기초 정리 에이전트-정안",
+  "stage": "source_normalized",
+  "input_files": [
+    "contents-asset/projects/buddhavamsa/data/documents.json",
+    "contents-asset/projects/buddhavamsa/assets/source/raw/gcb-src-004-salutation-and-intention.md",
+    "contents-asset/projects/buddhavamsa/data/status/gcb-src-004-salutation-and-intention.json"
+  ],
+  "output_files": [
+    "contents-asset/projects/buddhavamsa/assets/source/normalized/gcb-src-004-salutation-and-intention.md",
+    "contents-asset/projects/buddhavamsa/data/segments/gcb-src-004-salutation-and-intention.json"
+  ],
+  "summary": "Created normalized source markdown and a 12-segment map from the raw page capture, preserving source order and removing only non-source site footer metadata.",
+  "issues": [
+    {
+      "type": "OCR 의심",
+      "detail": "Normalized repeated internal spaces in the raw capture, including 'With  most' -> 'With most'."
+    },
+    {
+      "type": "문단 경계 불확실",
+      "detail": "Heading explanation line for 'I: Salutation and Intention' was grouped with the heading as one segment for workflow stability."
+    }
+  ],
+  "requires_human_review": false,
+  "next_recommended_action": "A02 reference split 여부 확인 후 A03 term candidates로 진행.",
+  "created_at": "2026-06-06T23:58:00+09:00"
+}

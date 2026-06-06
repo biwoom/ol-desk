@@ -25,10 +25,9 @@ ol-desk-crew/
 기획 기준 문서:
 
 ```text
-/Users/damjin/Projects/ol-project/OL-Project-매뉴얼/OL-CREW/00_OL-CREW_전체기획.md
-/Users/damjin/Projects/ol-project/OL-Project-매뉴얼/OL-CREW/01_OL-DESK_개발기획.md
-/Users/damjin/Projects/ol-project/OL-Project-매뉴얼/OL-CREW/02_Contents-Asset_데이터구조기획.md
-/Users/damjin/Projects/ol-project/OL-Project-매뉴얼/OL-CREW/03_AI-Agent_운영기획.md
-/Users/damjin/Projects/ol-project/OL-Project-매뉴얼/OL-CREW/04_번역워크플로우_운영매뉴얼.md
+ol-desk-crew/manual/00_OL-CREW_전체기획.md
+ol-desk-crew/manual/01_OL-DESK_개발기획.md
+ol-desk-crew/manual/02_Contents-Asset_데이터구조기획.md
+ol-desk-crew/manual/03_AI-Agent_운영기획.md
+ol-desk-crew/manual/04_번역워크플로우_운영매뉴얼.md
 ```
-

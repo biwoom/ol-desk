@@ -1,0 +1,36 @@
+{
+  "doc_id": "gcb-src-007-the-renunciaton-of-sumedha",
+  "updated_at": "2026-06-06T00:00:00+09:00",
+  "segments": [
+    {
+      "segment_id": "001",
+      "source_start": "## IV: The Renunciaton of Sumedha",
+      "source_end": "## IV: The Renunciaton of Sumedha",
+      "notes": "Section heading."
+    },
+    {
+      "segment_id": "002",
+      "source_start": "### Sumedha’s Reflection",
+      "source_end": "### Sumedha’s Reflection",
+      "notes": "Subheading."
+    },
+    {
+      "segment_id": "003",
+      "source_start": "One day he went up to the upper terrace of his mansion and sitting cross-legged in solitude, he thought (Bv 2.7-27):",
+      "source_end": "One day he went up to the upper terrace of his mansion and sitting cross-legged in solitude, he thought (Bv 2.7-27):",
+      "notes": "Normalized internal double space in raw: 'One day  he' -> 'One day he'."
+    },
+    {
+      "segment_id": "004",
+      "source_start": "“Miserable, is birth in a new existence; so is destruction of the body; miserable, also it is to die in delusion, oppressed and overpowered by old age.",
+      "source_end": "Being subject to birth, old age and sickness, I will seek Nibbāna where old age, death and fear are extinct.",
+      "notes": "Paragraph preserved as a single quoted unit."
+    },
+    {
+      "segment_id": "005",
+      "source_start": "Wonderful it would be, if I could abandon this body of mine without any regard for it, as it is full of putrid things, such as urine, excreta, pus, blood, bile, phlegm, saliva, mucus, etc.",
+      "source_end": "Wonderful it would be, if I could abandon this body of mine without any regard for it, as it is full of putrid things, such as urine, excreta, pus, blood, bile, phlegm, saliva, mucus, etc.",
+      "notes": "Raw file ends here; possible truncation noted in agent log."
+    }
+  ]
+}

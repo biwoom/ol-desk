@@ -1,5 +1,36 @@
 {
   "project_id": "buddhavamsa",
-  "updated_at": "2026-06-06T00:00:00+09:00",
-  "annotations": []
+  "updated_at": "2026-06-07T00:04:00+09:00",
+  "annotations": [
+    {
+      "annotation_id": "ann-gcb-src-004-001",
+      "target_text": "Paṭiññā",
+      "annotation_text": "빨리어 Paṭiññā는 문자 그대로 약속, 서원을 뜻하는 말로 풀이된다.",
+      "annotation_type": "gloss",
+      "status": "candidate",
+      "created_by": "agent",
+      "first_doc_id": "gcb-src-004-salutation-and-intention",
+      "updated_at": "2026-06-07T00:04:00+09:00"
+    },
+    {
+      "annotation_id": "ann-gcb-src-004-002",
+      "target_text": "nīyata-vyākaraṇa",
+      "annotation_text": "미래의 깨달음을 확정해 주는 수기라는 뜻으로 쓰인 표현이다.",
+      "annotation_type": "gloss",
+      "status": "candidate",
+      "created_by": "agent",
+      "first_doc_id": "gcb-src-004-salutation-and-intention",
+      "updated_at": "2026-06-07T00:04:00+09:00"
+    },
+    {
+      "annotation_id": "ann-gcb-src-004-003",
+      "target_text": "Buddha-vaṁsa",
+      "annotation_text": "붓다들의 연대기를 다루는 경전명으로, 본문 각주와 중복되지 않는 범위에서만 사용 검토가 필요하다.",
+      "annotation_type": "source_note",
+      "status": "hold",
+      "created_by": "agent",
+      "first_doc_id": "gcb-src-004-salutation-and-intention",
+      "updated_at": "2026-06-07T00:04:00+09:00"
+    }
+  ]
 }

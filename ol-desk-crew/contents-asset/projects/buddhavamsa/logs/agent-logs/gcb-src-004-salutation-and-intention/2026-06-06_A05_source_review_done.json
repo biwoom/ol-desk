@@ -1,0 +1,31 @@
+{
+  "log_id": "gcb-src-004-salutation-and-intention-2026-06-06-A05-source_review_done",
+  "project_id": "buddhavamsa",
+  "doc_id": "gcb-src-004-salutation-and-intention",
+  "agent_id": "A05",
+  "agent_name": "A05-원문대조 감수 에이전트-조견",
+  "stage": "source_review_done",
+  "input_files": [
+    "contents-asset/projects/buddhavamsa/assets/source/normalized/gcb-src-004-salutation-and-intention.md",
+    "contents-asset/projects/buddhavamsa/outputs/manuscripts/draft1/gcb-src-004-salutation-and-intention.md",
+    "contents-asset/projects/buddhavamsa/logs/agent-logs/gcb-src-004-salutation-and-intention/2026-06-06_A04_draft1_done.json"
+  ],
+  "output_files": [
+    "contents-asset/projects/buddhavamsa/logs/agent-logs/gcb-src-004-salutation-and-intention/2026-06-06_A05_source_review_done.json",
+    "contents-asset/projects/buddhavamsa/data/revisions/gcb-src-004-salutation-and-intention.json"
+  ],
+  "summary": "Compared all 12 normalized segments against draft1 and recorded only provisional terminology and title-meaning judgments for carry-forward.",
+  "issues": [
+    {
+      "category": "needs_human_judgment",
+      "detail": "Segment 002 title term Paṭiññā could support multiple Korean renderings; keep current choice provisional."
+    },
+    {
+      "category": "term_inconsistency",
+      "detail": "Draft1 intentionally uses transliterated doctrinal terms because no approved project glossary exists yet."
+    }
+  ],
+  "requires_human_review": true,
+  "next_recommended_action": "Reflect the review notes in draft2 while keeping doctrinal labels visibly provisional for later human review.",
+  "created_at": "2026-06-07T00:03:00+09:00"
+}

@@ -1,0 +1,108 @@
+{
+  "log_id": "2026-06-06_00_director_review",
+  "project_id": "buddhavamsa",
+  "agent_id": "00",
+  "agent_name": "00-총괄 번역 디렉터-법장",
+  "stage": "director_review",
+  "reviewed_documents": [
+    {
+      "doc_id": "gcb-src-007-the-renunciaton-of-sumedha",
+      "current_status": "source_normalized",
+      "requested_action": "테스트 번역 착수",
+      "line_assignment": "A-line",
+      "delegated_review": {
+        "child_issue_identifier": "OLDA-12",
+        "verified_outputs": [
+          "contents-asset/projects/buddhavamsa/assets/source/normalized/gcb-src-007-the-renunciaton-of-sumedha.md",
+          "contents-asset/projects/buddhavamsa/data/segments/gcb-src-007-the-renunciaton-of-sumedha.json",
+          "contents-asset/projects/buddhavamsa/logs/agent-logs/gcb-src-007-the-renunciaton-of-sumedha/2026-06-06_A01_source_normalized.json",
+          "contents-asset/projects/buddhavamsa/data/status/gcb-src-007-the-renunciaton-of-sumedha.json"
+        ],
+        "verification_result": "source_normalized completion criteria satisfied",
+        "scope_guard_confirmed": true
+      }
+    },
+    {
+      "doc_id": "gcb-src-004-salutation-and-intention",
+      "current_status": "draft2_done",
+      "requested_action": "인간 검수 직전 단계인 2차 번역 윤문까지 진행",
+      "line_assignment": "A-line",
+      "delegated_review": {
+        "child_issue_identifier": "OLDA-15",
+        "verified_outputs": [
+          "contents-asset/projects/buddhavamsa/assets/source/normalized/gcb-src-004-salutation-and-intention.md",
+          "contents-asset/projects/buddhavamsa/data/segments/gcb-src-004-salutation-and-intention.json",
+          "contents-asset/projects/buddhavamsa/outputs/manuscripts/draft1/gcb-src-004-salutation-and-intention.md",
+          "contents-asset/projects/buddhavamsa/outputs/manuscripts/draft2/gcb-src-004-salutation-and-intention.md",
+          "contents-asset/projects/buddhavamsa/data/revisions/gcb-src-004-salutation-and-intention.json",
+          "contents-asset/projects/buddhavamsa/data/status/gcb-src-004-salutation-and-intention.json",
+          "contents-asset/projects/buddhavamsa/logs/agent-logs/gcb-src-004-salutation-and-intention/2026-06-06_A01_source_normalized.json",
+          "contents-asset/projects/buddhavamsa/logs/agent-logs/gcb-src-004-salutation-and-intention/2026-06-06_A02_reference_split.json",
+          "contents-asset/projects/buddhavamsa/logs/agent-logs/gcb-src-004-salutation-and-intention/2026-06-06_A03_term_candidates.json",
+          "contents-asset/projects/buddhavamsa/logs/agent-logs/gcb-src-004-salutation-and-intention/2026-06-06_A04_draft1_done.json",
+          "contents-asset/projects/buddhavamsa/logs/agent-logs/gcb-src-004-salutation-and-intention/2026-06-06_A05_source_review_done.json",
+          "contents-asset/projects/buddhavamsa/logs/agent-logs/gcb-src-004-salutation-and-intention/2026-06-06_A06_annotation_candidates.json",
+          "contents-asset/projects/buddhavamsa/logs/agent-logs/gcb-src-004-salutation-and-intention/2026-06-06_A07_draft2_done.json",
+          "contents-asset/projects/buddhavamsa/logs/agent-logs/gcb-src-004-salutation-and-intention/2026-06-07_A00_line_review_OLDA-17_process_correction.json"
+        ],
+        "verification_result": "draft2_done outputs are present and the manager direct-execution ambiguity was resolved by OLDA-17 with a corrective log and restored delegation rules",
+        "scope_guard_confirmed": true
+      }
+    }
+  ],
+  "delegated_tasks": [
+    {
+      "issue_identifier": "OLDA-2",
+      "owner": "A00-2차 생산 관리 매니저-선행",
+      "scope": "A-line intake bootstrap and first production queue"
+    },
+    {
+      "issue_identifier": "OLDA-3",
+      "owner": "B00-3차 확정 관리 매니저-결정",
+      "scope": "B-line queue validation and activation criteria"
+    },
+    {
+      "issue_identifier": "OLDA-12",
+      "owner": "A00-2차 생산 관리 매니저-선행",
+      "scope": "gcb-src-007 single-document test kickoff limited to source_normalized"
+    },
+    {
+      "issue_identifier": "OLDA-15",
+      "owner": "A00-2차 생산 관리 매니저-선행",
+      "scope": "gcb-src-004 single-document A-line production through draft2_done under director-approved intake exception"
+    },
+    {
+      "issue_identifier": "OLDA-17",
+      "owner": "A00-2차 생산 관리 매니저-선행",
+      "scope": "process-correction issue for OLDA-15 to explain manager direct-execution and restore child-delegation rules"
+    }
+  ],
+  "blocked_documents": [],
+  "error_documents": [],
+  "human_decisions_needed": [
+    {
+      "doc_id": "gcb-src-007-the-renunciaton-of-sumedha",
+      "decision": "원문 raw 수집본이 중간에서 끊긴 것인지 확인 필요",
+      "reason": "A01 agent-log noted likely truncation because the raw file ends mid-section after a short excerpt."
+    }
+  ],
+  "next_recommended_action": "The requested single A-line cycle for gcb-src-004 is complete through draft2_done. If the board wants to continue, the next proper owner is B01 for human_review_ready preparation.",
+  "queue_summary": {
+    "status_distribution": {
+      "source_ready": 207,
+      "source_normalized": 1
+    },
+    "human_review_ready_count": 0,
+    "human_editing_count": 0,
+    "b_line_actionable_count": 0
+  },
+  "notes": [
+    "User comment on June 6, 2026 requested starting translation work for gcb-src-007 as a test translation and explicitly warned against over-progressing the workflow.",
+    "Director explicitly approved the first A01 gate for this single document only and delegated execution to A00 rather than performing translation directly.",
+    "Review of delegated work confirmed that no reference split, draft1, or draft2 outputs were created for gcb-src-007 in this test batch.",
+    "Board comment on June 6, 2026 requested a complete single translation cycle up to draft2_done for gcb-src-004, so the director delegated the document to A00 as OLDA-15 with explicit approval to pass the initial intake gate for this one document.",
+    "A later board comment flagged that A00 appeared to process the work personally instead of routing through child agents. The director confirmed that the A00 completion log explicitly claimed the manager executed the full A-line chain, then opened OLDA-17 to separate process correction from the already-produced translation artifacts.",
+    "OLDA-17 completed with a corrective process log and an A00 role-rule update: future single-document or full-cycle exceptions still require child delegation, not manager self-production."
+  ],
+  "created_at": "2026-06-07T00:06:02+09:00"
+}

@@ -1,0 +1,57 @@
+{
+  "log_id": "gcb-src-007-the-renunciaton-of-sumedha-2026-06-06-A01-source_normalized",
+  "project_id": "buddhavamsa",
+  "doc_id": "gcb-src-007-the-renunciaton-of-sumedha",
+  "agent_id": "A01",
+  "agent_name": "A01-기초 정리 에이전트-정안",
+  "stage": "source_normalized",
+  "input_files": [
+    "contents-asset/projects/buddhavamsa/data/documents.json",
+    "contents-asset/projects/buddhavamsa/assets/source/raw/gcb-src-007-the-renunciaton-of-sumedha.md",
+    "contents-asset/projects/buddhavamsa/data/status/gcb-src-007-the-renunciaton-of-sumedha.json"
+  ],
+  "output_files": [
+    "contents-asset/projects/buddhavamsa/assets/source/normalized/gcb-src-007-the-renunciaton-of-sumedha.md",
+    "contents-asset/projects/buddhavamsa/data/segments/gcb-src-007-the-renunciaton-of-sumedha.json",
+    "contents-asset/projects/buddhavamsa/data/status/gcb-src-007-the-renunciaton-of-sumedha.json"
+  ],
+  "summary": "Created normalized source markdown and segment map for the captured raw excerpt, preserving source order and noting likely raw truncation.",
+  "requires_human_review": false,
+  "next_recommended_action": "A02 reference split 또는 A03 term candidates. 다만 raw 원문 누락 가능성은 후속 단계에서 재확인 권장.",
+  "created_at": "2026-06-06T00:00:00+09:00",
+  "timestamp": "2026-06-06T00:00:00+09:00",
+  "inputs": {
+    "document_registry": "contents-asset/projects/buddhavamsa/data/documents.json",
+    "raw_source": "contents-asset/projects/buddhavamsa/assets/source/raw/gcb-src-007-the-renunciaton-of-sumedha.md",
+    "status_file": "contents-asset/projects/buddhavamsa/data/status/gcb-src-007-the-renunciaton-of-sumedha.json"
+  },
+  "outputs": {
+    "normalized_markdown": "contents-asset/projects/buddhavamsa/assets/source/normalized/gcb-src-007-the-renunciaton-of-sumedha.md",
+    "segments_json": "contents-asset/projects/buddhavamsa/data/segments/gcb-src-007-the-renunciaton-of-sumedha.json"
+  },
+  "normalization_scope": [
+    "Preserved source order and existing wording.",
+    "Added stable paragraph IDs [001]-[005] to headings and prose units.",
+    "Normalized one internal spacing issue: 'One day  he' -> 'One day he'.",
+    "Did not infer or restore missing source beyond the captured raw file."
+  ],
+  "issues": [
+    {
+      "type": "원문 누락 가능성",
+      "detail": "Raw file is only 16 lines and ends mid-section after the second reflection paragraph. Neighboring chapters are materially longer, so source capture truncation is likely."
+    },
+    {
+      "type": "문단 경계 불확실",
+      "detail": "The preserved raw excerpt contains only one prose lead-in and two quoted paragraphs. Segment boundaries follow visible paragraph breaks only."
+    },
+    {
+      "type": "OCR 의심",
+      "detail": "Observed duplicated internal space in raw: 'One day  he'. Normalized in working copy only."
+    }
+  ],
+  "remaining_issues": [
+    "Verify against the source URL whether additional text is missing from the raw capture.",
+    "If raw is recollected later, regenerate normalized and segment outputs from the fuller source."
+  ],
+  "completion_comment": "Status: done\n\n- Scope: raw 원문 정리 및 segments JSON 생성\n- Inputs: assets/source/raw/gcb-src-007-the-renunciaton-of-sumedha.md\n- Outputs: assets/source/normalized/gcb-src-007-the-renunciaton-of-sumedha.md, data/segments/gcb-src-007-the-renunciaton-of-sumedha.json, A01 agent-log\n- Issues: 원문 누락 가능성, 문단 경계 불확실, OCR 의심\n- Next: A02 reference split 또는 A03 term candidates"
+}

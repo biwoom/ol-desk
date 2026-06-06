@@ -1,5 +1,77 @@
 {
   "project_id": "buddhavamsa",
-  "updated_at": "2026-06-06T00:00:00+09:00",
-  "terms": []
+  "updated_at": "2026-06-07T00:00:00+09:00",
+  "terms": [
+    {
+      "term_id": "term-gcb-src-004-001",
+      "source_term": "Paṭiññā",
+      "source_language": "pali",
+      "translation": "서원",
+      "alternatives": [
+        "뜻 밝힘",
+        "약속"
+      ],
+      "status": "hold",
+      "created_by": "agent",
+      "first_doc_id": "gcb-src-004-salutation-and-intention",
+      "usage_note": "Title nuance remains provisional; human review should confirm whether vow/promise/intention is best in this context.",
+      "updated_at": "2026-06-07T00:00:00+09:00"
+    },
+    {
+      "term_id": "term-gcb-src-004-002",
+      "source_term": "Bodhisatta",
+      "source_language": "pali",
+      "translation": "보디삿타",
+      "alternatives": [
+        "보살"
+      ],
+      "status": "candidate",
+      "created_by": "agent",
+      "first_doc_id": "gcb-src-004-salutation-and-intention",
+      "usage_note": "Working transliteration used to avoid implying a fixed doctrinal equivalence.",
+      "updated_at": "2026-06-07T00:00:00+09:00"
+    },
+    {
+      "term_id": "term-gcb-src-004-003",
+      "source_term": "Dhamma",
+      "source_language": "pali",
+      "translation": "담마",
+      "alternatives": [
+        "법"
+      ],
+      "status": "candidate",
+      "created_by": "agent",
+      "first_doc_id": "gcb-src-004-salutation-and-intention",
+      "usage_note": "Working transliteration pending project-level terminology approval.",
+      "updated_at": "2026-06-07T00:00:00+09:00"
+    },
+    {
+      "term_id": "term-gcb-src-004-004",
+      "source_term": "Saṅgha",
+      "source_language": "pali",
+      "translation": "상가",
+      "alternatives": [
+        "승가"
+      ],
+      "status": "candidate",
+      "created_by": "agent",
+      "first_doc_id": "gcb-src-004-salutation-and-intention",
+      "usage_note": "Working transliteration pending project-level terminology approval.",
+      "updated_at": "2026-06-07T00:00:00+09:00"
+    },
+    {
+      "term_id": "term-gcb-src-004-005",
+      "source_term": "Nibbāna",
+      "source_language": "pali",
+      "translation": "닙바나",
+      "alternatives": [
+        "열반"
+      ],
+      "status": "hold",
+      "created_by": "agent",
+      "first_doc_id": "gcb-src-004-salutation-and-intention",
+      "usage_note": "Conventional Korean equivalent and transliteration both remain viable; keep provisional.",
+      "updated_at": "2026-06-07T00:00:00+09:00"
+    }
+  ]
 }

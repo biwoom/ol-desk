@@ -1,0 +1,25 @@
+{
+  "log_id": "gcb-src-004-salutation-and-intention-2026-06-06-A04-draft1_done",
+  "project_id": "buddhavamsa",
+  "doc_id": "gcb-src-004-salutation-and-intention",
+  "agent_id": "A04",
+  "agent_name": "A04-1차 번역 에이전트-초역",
+  "stage": "draft1_done",
+  "input_files": [
+    "contents-asset/projects/buddhavamsa/assets/source/normalized/gcb-src-004-salutation-and-intention.md",
+    "contents-asset/projects/buddhavamsa/data/terms/terms.json"
+  ],
+  "output_files": [
+    "contents-asset/projects/buddhavamsa/outputs/manuscripts/draft1/gcb-src-004-salutation-and-intention.md"
+  ],
+  "summary": "Created a source-aligned first Korean draft preserving segment correspondence and footnote structure.",
+  "issues": [
+    {
+      "type": "미확정 용어",
+      "detail": "보디삿타, 담마, 상가, 닙바나, 붓다왐사/마하붓다왐사는 모두 candidate 또는 hold 성격의 작업용 표기다."
+    }
+  ],
+  "requires_human_review": true,
+  "next_recommended_action": "Run A05 source comparison before polishing the prose in draft2.",
+  "created_at": "2026-06-07T00:01:00+09:00"
+}

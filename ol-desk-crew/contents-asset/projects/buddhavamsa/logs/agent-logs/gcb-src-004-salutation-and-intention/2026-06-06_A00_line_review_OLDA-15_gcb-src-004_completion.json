@@ -1,0 +1,39 @@
+{
+  "log_id": "OLDA-15-gcb-src-004-2026-06-06-A00-line_review",
+  "project_id": "buddhavamsa",
+  "doc_id": "gcb-src-004-salutation-and-intention",
+  "agent_id": "A00",
+  "agent_name": "A00-2차 생산 관리 매니저-선행",
+  "stage": "line_review",
+  "input_files": [
+    "contents-asset/projects/buddhavamsa/data/documents.json",
+    "contents-asset/projects/buddhavamsa/data/status/gcb-src-004-salutation-and-intention.json",
+    "contents-asset/projects/buddhavamsa/assets/source/raw/gcb-src-004-salutation-and-intention.md",
+    "contents-asset/projects/buddhavamsa/data/terms/terms.json",
+    "contents-asset/projects/buddhavamsa/data/annotations/annotations.json"
+  ],
+  "output_files": [
+    "contents-asset/projects/buddhavamsa/assets/source/normalized/gcb-src-004-salutation-and-intention.md",
+    "contents-asset/projects/buddhavamsa/data/segments/gcb-src-004-salutation-and-intention.json",
+    "contents-asset/projects/buddhavamsa/outputs/manuscripts/draft1/gcb-src-004-salutation-and-intention.md",
+    "contents-asset/projects/buddhavamsa/data/revisions/gcb-src-004-salutation-and-intention.json",
+    "contents-asset/projects/buddhavamsa/outputs/manuscripts/draft2/gcb-src-004-salutation-and-intention.md",
+    "contents-asset/projects/buddhavamsa/logs/agent-logs/gcb-src-004-salutation-and-intention/2026-06-06_A01_source_normalized.json",
+    "contents-asset/projects/buddhavamsa/logs/agent-logs/gcb-src-004-salutation-and-intention/2026-06-06_A02_reference_split.json",
+    "contents-asset/projects/buddhavamsa/logs/agent-logs/gcb-src-004-salutation-and-intention/2026-06-06_A03_term_candidates.json",
+    "contents-asset/projects/buddhavamsa/logs/agent-logs/gcb-src-004-salutation-and-intention/2026-06-06_A04_draft1_done.json",
+    "contents-asset/projects/buddhavamsa/logs/agent-logs/gcb-src-004-salutation-and-intention/2026-06-06_A05_source_review_done.json",
+    "contents-asset/projects/buddhavamsa/logs/agent-logs/gcb-src-004-salutation-and-intention/2026-06-06_A06_annotation_candidates.json",
+    "contents-asset/projects/buddhavamsa/logs/agent-logs/gcb-src-004-salutation-and-intention/2026-06-06_A07_draft2_done.json"
+  ],
+  "summary": "Reviewed OLDA-15 production prerequisites, executed the full A-line chain for gcb-src-004 through draft2_done under the director-approved exception, and confirmed that the document is now ready for B01 human-review preparation.",
+  "issues": [
+    {
+      "type": "requires_human_review",
+      "detail": "No doctrinal term, title nuance, or annotation candidate was marked approved. All such judgments remain open for human review."
+    }
+  ],
+  "requires_human_review": true,
+  "next_recommended_action": "Hand off to B01 for human_review_ready only; do not start B02 or later B-line work without a human-confirmed handoff.",
+  "created_at": "2026-06-07T00:07:00+09:00"
+}

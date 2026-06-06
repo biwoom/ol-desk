@@ -1,0 +1,26 @@
+{
+  "log_id": "gcb-src-004-salutation-and-intention-2026-06-06-A06-annotation_candidates",
+  "project_id": "buddhavamsa",
+  "doc_id": "gcb-src-004-salutation-and-intention",
+  "agent_id": "A06",
+  "agent_name": "A06-각주 후보 에이전트-해의",
+  "stage": "annotation_candidates_done",
+  "input_files": [
+    "contents-asset/projects/buddhavamsa/assets/source/normalized/gcb-src-004-salutation-and-intention.md",
+    "contents-asset/projects/buddhavamsa/outputs/manuscripts/draft1/gcb-src-004-salutation-and-intention.md",
+    "contents-asset/projects/buddhavamsa/data/annotations/annotations.json"
+  ],
+  "output_files": [
+    "contents-asset/projects/buddhavamsa/data/annotations/annotations.json"
+  ],
+  "summary": "Added concise annotation candidates for source terms that may need reader support during human review.",
+  "issues": [
+    {
+      "type": "needs_human_judgment",
+      "detail": "Annotation scope should be narrowed or expanded by a human reviewer depending on target readership."
+    }
+  ],
+  "requires_human_review": true,
+  "next_recommended_action": "Proceed to A07 draft2 while keeping annotation candidates out of the manuscript body.",
+  "created_at": "2026-06-07T00:04:00+09:00"
+}

@@ -1,0 +1,53 @@
+{
+  "log_id": "2026-06-06_B00_line_review",
+  "project_id": "buddhavamsa",
+  "agent_id": "3ccd5839-0af2-4f83-beb2-c93f0a4f5ecc",
+  "agent_name": "B00-3차 확정 관리 매니저-결정",
+  "stage": "line_review",
+  "input_files": [
+    "contents-asset/projects/buddhavamsa/data/documents.json",
+    "contents-asset/projects/buddhavamsa/data/status/",
+    "contents-asset/projects/buddhavamsa/data/revisions/",
+    "contents-asset/projects/buddhavamsa/handoff/draft3/",
+    "contents-asset/projects/buddhavamsa/outputs/manuscripts/draft3/",
+    "contents-asset/projects/buddhavamsa/outputs/manuscripts/draft4/",
+    "contents-asset/projects/buddhavamsa/logs/agent-logs/"
+  ],
+  "output_files": [
+    "contents-asset/projects/buddhavamsa/logs/agent-logs/director/2026-06-06_B00_line_review.json"
+  ],
+  "summary": "Validated the Buddhavamsa B-line queue and found no actionable documents for draft3_handoff_ready, draft3_requested, draft3_generated, final_scan_done, or final_review. The project has raw source files, but no registered documents, no per-document status JSON, no revision JSON, no draft3 handoff JSON, and no B-line execution logs.",
+  "issues": [
+    {
+      "type": "queue_empty",
+      "detail": "B-line actionable queue size is 0 across draft3_handoff_ready, draft3_requested, draft3_generated, final_scan_done, and final_review."
+    },
+    {
+      "type": "documents_registry_empty",
+      "detail": "contents-asset/projects/buddhavamsa/data/documents.json contains an empty documents array while assets/source/raw/ contains 208 markdown source files."
+    },
+    {
+      "type": "status_missing",
+      "detail": "contents-asset/projects/buddhavamsa/data/status/ contains no per-document status JSON files, so no document can be routed to B01, B02, B03, or B04."
+    },
+    {
+      "type": "revision_missing",
+      "detail": "contents-asset/projects/buddhavamsa/data/revisions/ contains no revision JSON files required for human review preparation and draft3 handoff validation."
+    },
+    {
+      "type": "handoff_missing",
+      "detail": "contents-asset/projects/buddhavamsa/handoff/draft3/ contains no draft3 handoff JSON files, so B02/B03/B04 must not start."
+    },
+    {
+      "type": "draft_outputs_missing",
+      "detail": "outputs/manuscripts/draft3/ and outputs/manuscripts/draft4/ contain no manuscript files beyond placeholders."
+    },
+    {
+      "type": "b_line_logs_missing",
+      "detail": "No B01/B02/B03/B04 agent-log evidence exists for buddhavamsa."
+    }
+  ],
+  "requires_human_review": false,
+  "next_recommended_action": "Wait for OLDA-2 to register document doc_ids in data/documents.json and produce the first A-line outputs needed for B-line activation. B-line can start only after, per doc_id, a valid data/status/{doc_id}.json enters draft2_done or later, B01 creates data/revisions/{doc_id}.json and human_review_ready, and human-confirmed handoff/draft3/{doc_id}.json exists before any B02/B03/B04 work.",
+  "created_at": "2026-06-06T21:35:00+09:00"
+}

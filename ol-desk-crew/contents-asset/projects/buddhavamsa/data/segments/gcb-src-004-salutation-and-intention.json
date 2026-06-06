@@ -1,0 +1,78 @@
+{
+  "doc_id": "gcb-src-004-salutation-and-intention",
+  "updated_at": "2026-06-06T23:58:00+09:00",
+  "segments": [
+    {
+      "segment_id": "001",
+      "source_start": "## The Bodhisatta [This title has been added in, as there was no overall descriptive title for this section.]",
+      "source_end": "## The Bodhisatta [This title has been added in, as there was no overall descriptive title for this section.]",
+      "notes": "Inserted stable segment marker ahead of an existing editorial heading note."
+    },
+    {
+      "segment_id": "002",
+      "source_start": "## I: Salutation and Intention",
+      "source_end": "The original word in Pāli is Paṭiññā, which literally means \"promise\" or \"vow.\"",
+      "notes": "Heading plus explanatory sentence kept as a single unit."
+    },
+    {
+      "segment_id": "003",
+      "source_start": "### Namo Tassa Bhagavato Arahato Sammā-sambuddhassa!",
+      "source_end": "### Namo Tassa Bhagavato Arahato Sammā-sambuddhassa!",
+      "notes": "Standalone liturgical line."
+    },
+    {
+      "segment_id": "004",
+      "source_start": "This Pāḷi sentence is a formula of great honour paid to the Buddha",
+      "source_end": "A Buddhist literary work usually begins with this to show the author's devotion and obeisance.",
+      "notes": "Normalized quotation punctuation only."
+    },
+    {
+      "segment_id": "005",
+      "source_start": "With most respectful adoration, I pay obeisance to the Buddha",
+      "source_end": "and who is like them in all aspects of glory, virtues and attributes.",
+      "notes": "Internal double spacing in raw normalized to single spaces."
+    },
+    {
+      "segment_id": "006",
+      "source_start": "Malalasekera says there are eight differences (*aṭṭha-vemattāni*)",
+      "source_end": "[Also see the discussion in the Supplement in the Further Explanations.]",
+      "notes": "Embedded note marker converted to Markdown footnote [^1]."
+    },
+    {
+      "segment_id": "007",
+      "source_start": "With most respectful adoration, I pay obeisance to the Dhamma",
+      "source_end": "and which has been held in high esteem.",
+      "notes": "Embedded note marker converted to Markdown footnote [^2]."
+    },
+    {
+      "segment_id": "008",
+      "source_start": "With most respectful adoration, I pay obeisance to the Saṅgha",
+      "source_end": "of the Dhamma.",
+      "notes": "Embedded note marker converted to Markdown footnote [^3]."
+    },
+    {
+      "segment_id": "009",
+      "source_start": "Having paid respects to the Buddha, the Dhamma and the Saṅgha",
+      "source_end": "received the definite prophecy that he would become a Perfectly Self-Awakened One.",
+      "notes": "Two embedded note markers converted to Markdown footnotes [^4]-[^5]."
+    },
+    {
+      "segment_id": "010",
+      "source_start": "Receiving of the definite prophecy (*nīyata-vyākaraṇa*)",
+      "source_end": "We shall see more about it when we come to the story of Sumedha.",
+      "notes": "Paragraph preserved as a single conceptual unit."
+    },
+    {
+      "segment_id": "011",
+      "source_start": "May those virtuous people, who are desirous of seeking merit and knowledge;",
+      "source_end": "easily attain the paths, fruitions and Nibbāna.",
+      "notes": "Enumerated devotional blessing preserved in one segment."
+    },
+    {
+      "segment_id": "012",
+      "source_start": "After the word Buddha, the author adds an adjectival clause reading:",
+      "source_end": "The form and formless worlds belong to the Brahmas.",
+      "notes": "Closing explanatory paragraph; omitted webpage footer line 'last updated: August 2024' as site metadata."
+    }
+  ]
+}
